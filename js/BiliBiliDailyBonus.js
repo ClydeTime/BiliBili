@@ -139,7 +139,7 @@ async function signBiliBili() {
 	if (config.cookie && await me()) {
 		await queryStatus()
 		var flag = true
-		let exec_times = config.exec	//用户设置投币次数
+		let exec_times = config.Settings?.exec	//用户设置投币次数
 		if (!Boolean(exec_times)) {
 			exec_times = 5
 			real_times = 5 - (Number(config.coins.num) / 10)
@@ -194,8 +194,8 @@ async function signBiliBili() {
 				if (config.user.vipType === 2) {
 					await vipPrivilege(1)
 					await $.wait(800); //延迟执行，防止领劵延迟
-					let charge_mid = config.charge_mid || config.user.mid
-					let bp_num = config.bp_num || 5
+					let charge_mid = config.Settings?.charge_mid || config.user.mid
+					let bp_num = config.Settings?.bp_num || 5
 					await Charge(charge_mid, bp_num)//充电
 					await vipPrivilege(2)
 					await vipPrivilege(3)
