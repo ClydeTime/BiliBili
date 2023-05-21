@@ -23,25 +23,25 @@
 			],
 			"keys":
 			[
-				"@bilibili_daily_bonus"
+				"@Bilibili_daily_bonus"
 			],
 			"settings":
 			[
 				{
-					"id": "@bilibili_daily_bonus.exec",
+					"id": "@Bilibili_daily_bonus.exec",
 					"name": "投币次数",
 					"val": "5",
 					"type": "text",
 					"desc": "投币次数(用户自行设置，默认5次)"
 				},
 				{
-					"id": "@bilibili_daily_bonus.charge_mid",
+					"id": "@Bilibili_daily_bonus.charge_mid",
 					"name": "被充电用户id",
 					"type": "text",
 					"desc": "不填写即为自己, 填写后为指定用户id充电"
 				},
 				{
-					"id": "@bilibili_daily_bonus.bp_num",
+					"id": "@Bilibili_daily_bonus.bp_num",
 					"name": "充电B币数",
 					"val": "5",
 					"type": "text",
