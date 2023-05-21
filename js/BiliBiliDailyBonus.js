@@ -34,10 +34,10 @@ Surge 脚本配置:
 ************************
 
 [Script]
-B站每日等级任务 = type=cron,cronexp=30 8 * * *,script-path=https://raw.githubusercontent.com/ClydeTime/Surge/main/Script/Task/BiliBili.js,wake-system=1,timeout=15,script-update-interval=0
+B站每日等级任务 = type=cron,cronexp=30 8 * * *,script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js,wake-system=1,timeout=15,script-update-interval=0
 
-# BiliBili获取Cookie 「请在模块中添加,成功获取Cookie后模块应去除勾选」
-https://raw.githubusercontent.com/ClydeTime/Surge/main/Task/GetCookie.sgmodule
+# BiliBili获取Cookie 「请在模块中添加,成功获取Cookie后模块去除勾选」
+https://raw.githubusercontent.com/ClydeTime/BiliBili/main/modules/GetCookie.sgmodule
 
 ************************
 QuantumultX 远程脚本配置:
@@ -45,24 +45,20 @@ QuantumultX 远程脚本配置:
 
 [task_local]
 # B站每日等级任务
-30 8 * * * https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js, tag=B站每日等级任务, img-url=https://raw.githubusercontent.com/HuiDoY/Icon/main/mini/Color/bilibili.png, enabled=true
+30 8 * * * https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站每日等级任务, img-url=https://raw.githubusercontent.com/HuiDoY/Icon/main/mini/Color/bilibili.png, enabled=true
 
-[rewrite_remote]
-# B站获取Cookie 「成功获取Cookie后请去除勾选」
-https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/Remote_Cookie.conf, tag=MartinsKing签到Cookie, update-interval=172800, opt-parser=false, enabled=true
-
+# BiliBili获取Cookie 「请在重写中添加,成功获取Cookie后重写去除勾选」
+https://raw.githubusercontent.com/ClydeTime/BiliBili/main/modules/GetCookie.snippet
 ************************
 Loon 远程脚本配置:
 ************************
 
 [Script]
 # BiliBili每日等级任务
-cron "30 8 * * *" script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/BiliBili.js, tag=BiliBili每日等级任务
+cron "30 8 * * *" script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站每日等级任务
 
-[Plugin]
-# BiliBili获取Cookie 「成功获取Cookie后请禁用插件」
-https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Task/GetCookie.plugin, tag=MartinsKing签到Cookie, enabled=true
-
+# BiliBili获取Cookie 「请在插件中添加,成功获取Cookie后插件禁用」
+https://raw.githubusercontent.com/ClydeTime/BiliBili/main/modules/GetCookie.plugin
 */
 
 const format = (ts, fmt = 'yyyy-MM-dd HH:mm:ss') => {
