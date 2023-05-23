@@ -516,7 +516,7 @@ async function getFavAid(arr) {
 	var random_int = Math.floor((Math.random()*arr.length))
 	var random_mid = arr[random_int]
 	const myRequest = {
-		url: `https://api.bilibili.com/x/space/arc/search?mid=${random_mid}`,
+		url: `https://api.bilibili.com/x/space/wbi/arc/search?mid=${random_mid}&ps=20`,
 		headers: {
 			'cookie': config.cookieStr
 		}
