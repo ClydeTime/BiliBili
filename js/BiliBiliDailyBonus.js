@@ -1,7 +1,7 @@
 /*
 哔哩哔哩每日任务脚本
 
-更新时间: 2023-05-21
+更新时间: 2023-05-24
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到/年度大会员每月B币券+等任务
@@ -24,7 +24,7 @@ QX, Surge, Loon说明：
 	②通过网址「https://www.bilibili.com」登录
 如通知成功获取cookie, 则可以使用此签到脚本.
 获取Cookie后, 请将Cookie脚本禁用并移除主机名, 以免产生不必要的MITM.
-脚本将在每天上午8点30执行, 您可以修改执行时间, 但是注意不要在凌晨执行, 否则部分任务可能无法完成(非脚本问题, 可能与B站服务器有关)
+脚本将在每天上午7点30执行, 您可以修改执行时间, 但是注意不要在凌晨执行, 否则部分任务可能无法完成(非脚本问题, 可能与B站服务器有关)
 2.投币设置
 定时任务脚本投币规则为: 随机获取关注列表Up主视频, 默认5视频5硬币, 不点赞.
 用户如需要不投币的版本, 请使用boxjs订阅「https://raw.githubusercontent.com/ClydeTime/BiliBili/main/boxjs/BiliBili.boxjs.json」
@@ -34,7 +34,7 @@ Surge 脚本配置:
 ************************
 
 [Script]
-B站每日等级任务 = type=cron,cronexp=30 8 * * *,script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js,wake-system=1,timeout=15,script-update-interval=0
+B站每日等级任务 = type=cron,cronexp=30 7 * * *,script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js,wake-system=1,timeout=15,script-update-interval=0
 
 # BiliBili获取Cookie 「请在模块中添加,成功获取Cookie后模块去除勾选」
 https://raw.githubusercontent.com/ClydeTime/BiliBili/main/modules/GetCookie.sgmodule
@@ -45,7 +45,7 @@ QuantumultX 远程脚本配置:
 
 [task_local]
 # B站每日等级任务
-30 8 * * * https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站每日等级任务, img-url=https://raw.githubusercontent.com/HuiDoY/Icon/main/mini/Color/bilibili.png, enabled=true
+30 7 * * * https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站每日等级任务, img-url=https://raw.githubusercontent.com/HuiDoY/Icon/main/mini/Color/bilibili.png, enabled=true
 
 # BiliBili获取Cookie 「请在重写中添加,成功获取Cookie后重写去除勾选」
 https://raw.githubusercontent.com/ClydeTime/BiliBili/main/modules/GetCookie.snippet
@@ -55,7 +55,7 @@ Loon 远程脚本配置:
 
 [Script]
 # BiliBili每日等级任务
-cron "30 8 * * *" script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站每日等级任务
+cron "30 7 * * *" script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站每日等级任务
 
 # BiliBili获取Cookie 「请在插件中添加,成功获取Cookie后插件禁用」
 https://raw.githubusercontent.com/ClydeTime/BiliBili/main/modules/GetCookie.plugin
