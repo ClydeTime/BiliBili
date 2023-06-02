@@ -1,5 +1,5 @@
-#!name=BiliBili日常等级任务
-#!desc=BiliBili日常等级任务及任务脚本的Cookie获取
+#!name=BiliBili每日等级任务
+#!desc=定时任务及Cookie获取
 #!author= MartinsKing（@ClydeTime）
 #!homepage= https://github.com/ClydeTime/BiliBili/tree/master
 #!icon=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/database/icon_Avatar.png
