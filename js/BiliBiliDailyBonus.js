@@ -121,16 +121,20 @@ function getCookie() {
 		} else if (typeof $request.headers.Cookie != 'undefined') {
 			Cookie = $request.headers.Cookie
 		}
-		config.cookie = cookie2object(Cookie)
-		original_config = $.getjson($.name + "_daily_bonus", {})
-		if (Boolean(original_config.cookie)) {
-			if (original_config.cookie.bili_jct === config.cookie.bili_jct) {
-				$.log("- cookie未失效,无需更新")
+		if (!Boolean(Cookie)) {
+			config.cookie = cookie2object(Cookie)
+			original_config = $.getjson($.name + "_daily_bonus", {})
+			if (Boolean(original_config.cookie)) {
+				if (original_config.cookie.bili_jct === config.cookie.bili_jct) {
+					$.log("- cookie未失效,无需更新")
+				} else {
+					setCookieToLocalStore(config, 2)
+				}
 			} else {
-				setCookieToLocalStore(config, 2)
+				setCookieToLocalStore(config, 1)
 			}
 		} else {
-			setCookieToLocalStore(config, 1)
+			$.msg($.name, "- 尚未登录, 请登录后重新获取cookie")
 		}
 	}
 }
