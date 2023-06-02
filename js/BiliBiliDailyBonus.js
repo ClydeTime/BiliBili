@@ -121,7 +121,7 @@ function getCookie() {
 		} else if (typeof $request.headers.Cookie != 'undefined') {
 			Cookie = $request.headers.Cookie
 		}
-		if (!Boolean(Cookie)) {
+		if (Boolean(Cookie)) {
 			config.cookie = cookie2object(Cookie)
 			original_config = $.getjson($.name + "_daily_bonus", {})
 			if (Boolean(original_config.cookie)) {
