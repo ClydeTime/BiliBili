@@ -90,7 +90,7 @@ const DataBase = {
 									break;
 								case "x/resource/show/skin": // 皮肤页
 									data.user_equip = Configs.Skin.user_equip.find(e => {
-										if (Settings.Skin.user_equip.includes(e.id.toString())) {
+										if (Settings.Skin.user_equip.equals(e.id.toString())) {
 											$.log("切换皮肤为: "+ e.name);
 											return e;
 										}
