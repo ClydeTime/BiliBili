@@ -350,13 +350,20 @@ function newRawBody({ header, body }, encoding = undefined) {
  * @return {Object} { Settings, Caches, Configs }
  */
 function setENV(name, platform, database) {
-	$.log(`⚠ ${$.name}, Set Environment Variables`, "");
+	//$.log(`☑️ ${$.name}, Set Environment Variables`, "");
 	let { Settings, Caches, Configs } = getENV(name, platform, database);
 	/***************** Prase *****************/
-	traverseObject(Settings, (key, value) => value.includes(",") ? value.split(",") : value );
-	$.log(`🎉 ${$.name}, Set Environment Variables`, `Settings: ${typeof Settings}`, `Settings内容: ${JSON.stringify(Settings)}`, "");
+	traverseObject(Settings, (key, value) => {
+		if (value === "true" || value === "false") value = JSON.parse(value); // 字符串转Boolean
+		else if (typeof value === "string") {
+			if (value?.includes(",")) value = value.split(","); // 字符串转数组
+			else if (!isNaN(value)) value = parseInt(value, 10) // 字符串转数字
+		};
+		return value;
+	});
+	$.log(`✅ ${$.name}, Set Environment Variables`, `Settings: ${typeof Settings}`, `Settings内容: ${JSON.stringify(Settings)}`, "");
 	/***************** Caches *****************/
-	//$.log(`🎉 ${$.name}, Set Environment Variables`, `Caches: ${typeof Caches}`, `Caches内容: ${JSON.stringify(Caches)}`, "");
+	//$.log(`✅ ${$.name}, Set Environment Variables`, `Caches: ${typeof Caches}`, `Caches内容: ${JSON.stringify(Caches)}`, "");
 	/***************** Configs *****************/
 	return { Settings, Caches, Configs };
 
