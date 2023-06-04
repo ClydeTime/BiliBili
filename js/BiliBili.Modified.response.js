@@ -90,13 +90,13 @@ const DataBase = {
 									break;
 								case "x/resource/show/skin": // 皮肤页
 									data.user_equip = Configs.Skin.user_equip.find(e => {
-										if (Settings.Skin.user_equip.equals(e.id.toString())) {
+										if (Settings.Skin.user_equip.toString() === e.id.toString()) {
 											$.log("切换皮肤为: "+ e.name);
 											return e;
 										}
 									});
 									data.load_equip = Configs.Skin.load_equip.find(e => {
-										if (Settings.Skin.load_equip.includes(e.id.toString())) {
+										if (Settings.Skin.load_equip.toString() === e.id.toString()) {
 											$.log("切换加载动画为: "+ e.name);
 											return e;
 										}
