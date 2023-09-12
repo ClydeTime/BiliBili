@@ -15,12 +15,18 @@ const config = {
 const $ = new Env("biliCookie")
 
 config.headers = $request.headers
-$.log($.toStr(config.headers))
-config.cookie = cookie2object(config.headers.Cookie)
+
+let Cookie
+if (typeof $request.headers.cookie != 'undefined') {
+  Cookie = $request.headers.cookie
+} else if (typeof $request.headers.Cookie != 'undefined') {
+  Cookie = $request.headers.Cookie
+}
+config.cookie = cookie2object(Cookie)
 var bili_headers = {}
 bili_headers.Cookie = `DedeUserID=${config.cookie.DedeUserID}; DedeUserID__ckMd5=${config.cookie.DedeUserID__ckMd5}; SESSDATA=${config.cookie.SESSDATA}; bili_jct=${config.cookie.bili_jct}; sid=${config.cookie.sid}`
-bili_headers.Authorization = config.headers.Authorization
-bili_headers['User-Agent'] = config['headers']['User-Agent']
+bili_headers.Authorization = config.headers.Authorization || config.headers.authorization
+bili_headers['User-Agent'] = config['headers']['User-Agent'] || config['headers']['user-agent']
 bili_headers['x-bili-locale-bin'] = config['headers']['x-bili-locale-bin']
 bili_headers['x-bili-device-bin'] = config['headers']['x-bili-device-bin']
 bili_headers['x-bili-metadata-bin'] = config['headers']['x-bili-metadata-bin']
