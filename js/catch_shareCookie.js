@@ -7,7 +7,7 @@ const cookie2object = (cookie) => {
   });
   return obj;
 };
-const config = {
+let config = {
   cookie: {},
   headers: {}
 };
