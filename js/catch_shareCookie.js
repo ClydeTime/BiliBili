@@ -17,6 +17,7 @@ config = $.getjson($.name, {})
 var bili_headers = {}
 if ($request.headers['x-bili-metadata-bin']) {
   config.headers = $request.headers
+  bili_headers.Other = {}
 } else {
   config.headers = {}
   bili_headers.Other = config.Other || {}
