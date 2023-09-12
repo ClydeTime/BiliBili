@@ -15,6 +15,7 @@ const config = {
 const $ = new Env("biliCookie")
 
 config.headers = $request.headers
+$.log($.toStr(config.headers))
 config.cookie = cookie2object(config.headers.Cookie)
 var bili_headers = {}
 bili_headers.Cookie = `DedeUserID=${config.cookie.DedeUserID}; DedeUserID__ckMd5=${config.cookie.DedeUserID__ckMd5}; SESSDATA=${config.cookie.SESSDATA}; bili_jct=${config.cookie.bili_jct}; sid=${config.cookie.sid}`
