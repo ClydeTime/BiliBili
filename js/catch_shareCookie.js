@@ -22,7 +22,7 @@ if ($request.headers['x-bili-metadata-bin']) {
   config.headers = {}
   bili_headers.Other = config.Other || {}
 }
-$.log($.toStr(config))
+$.log($.toStr(config) + $request.url)
 
 let Cookie
 if (typeof $request.headers.cookie != 'undefined') {
@@ -36,13 +36,14 @@ if (Cookie) {
 } else {
   bili_headers.Cookie = config.Cookie
 }
-
-bili_headers.Other.Authorization = config.headers.Authorization || config.headers.authorization
-bili_headers.Other['User-Agent'] = config['headers']['User-Agent'] || config['headers']['user-agent']
-bili_headers.Other['x-bili-locale-bin'] = config['headers']['x-bili-locale-bin']
-bili_headers.Other['x-bili-device-bin'] = config['headers']['x-bili-device-bin']
-bili_headers.Other['x-bili-metadata-bin'] = config['headers']['x-bili-metadata-bin']
-bili_headers.Other['x-bili-fawkes-req-bin'] = config['headers']['x-bili-fawkes-req-bin']
+if (config.headers.Authorization) {
+  bili_headers.Other.Authorization = config.headers.Authorization || config.headers.authorization
+  bili_headers.Other['User-Agent'] = config['headers']['User-Agent'] || config['headers']['user-agent']
+  bili_headers.Other['x-bili-locale-bin'] = config['headers']['x-bili-locale-bin']
+  bili_headers.Other['x-bili-device-bin'] = config['headers']['x-bili-device-bin']
+  bili_headers.Other['x-bili-metadata-bin'] = config['headers']['x-bili-metadata-bin']
+  bili_headers.Other['x-bili-fawkes-req-bin'] = config['headers']['x-bili-fawkes-req-bin']
+}
 
 $.setdata($.toStr(bili_headers), $.name)
 $.log($.toStr(bili_headers))
