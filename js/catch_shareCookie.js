@@ -15,7 +15,9 @@ let config = {
 const $ = new Env("biliCookie")
 config = $.getjson($.name, {})
 var bili_headers = {}
+var falg = false
 if ($request.headers['x-bili-metadata-bin']) {
+  falg = true
   config.headers = $request.headers
   bili_headers.Other = {}
 } else {
@@ -36,7 +38,7 @@ if (Cookie) {
 } else {
   bili_headers.Cookie = config.Cookie
 }
-if (config.headers.Authorization) {
+if (falg) {
   bili_headers.Other.Authorization = config.headers.Authorization || config.headers.authorization
   bili_headers.Other['User-Agent'] = config['headers']['User-Agent'] || config['headers']['user-agent']
   bili_headers.Other['x-bili-locale-bin'] = config['headers']['x-bili-locale-bin']
