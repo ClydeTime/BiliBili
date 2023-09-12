@@ -15,7 +15,7 @@ const config = {
 const $ = new Env("biliCookie")
 
 config.headers = $request.headers
-
+$.log($.toStr(config.headers))
 let Cookie
 if (typeof $request.headers.cookie != 'undefined') {
   Cookie = $request.headers.cookie
