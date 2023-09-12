@@ -18,7 +18,8 @@ var bili_headers = {}
 if ($request.headers['x-bili-metadata-bin']) {
   config.headers = $request.headers
 } else {
-  bili_headers.Other = config.Other
+  config.headers = {}
+  bili_headers.Other = config.Other || {}
 }
 $.log($.toStr(config))
 
