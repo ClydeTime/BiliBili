@@ -50,7 +50,7 @@ if (falg) {
 
 $.setdata($.toStr(bili_headers), $.name)
 $.log($.toStr(bili_headers))
-if (bili_headers.Other && bili_headers.Cookie) {
+if (bili_headers.Other.Authorization && bili_headers.Cookie) {
   $.msg("BiliBili-cookie获取", "获取成功", $.toStr(bili_headers))
 }
 
