@@ -1,7 +1,7 @@
 /*
 哔哩哔哩每日任务
 
-更新时间: 2023-06-02
+更新时间: 2023-10-07
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing（@ClydeTime）
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到/年度大会员每月B币券+等任务
@@ -19,7 +19,7 @@ QX, Surge, Loon说明：
 ************************
 1.获取cookie
 	①后台退出手机B站客户端的情况下, 重新打开APP进入主页
-	②通过网址「https://www.bilibili.com」登录
+	②通过网址「https://www.bilibili.com」登录（`暂不支持Loon`）
 如通知成功获取cookie, 则可以使用此签到脚本.
 脚本将在每天上午7点30执行.
 2.投币设置
@@ -68,11 +68,21 @@ const cookie2object = (cookie) => {
 	return obj;
 }
 
-const setCookieToLocalStore = (config, times) => {
+const setCookieToLocalStore = async (config, times) => {
 	if (config.cookie.DedeUserID) {
 		var url = $request.url
 		config.key = url.match(/.*access_key=(.*?)&build/)?.[1]
 		config.cookieStr = `DedeUserID=${config.cookie.DedeUserID}; DedeUserID__ckMd5=${config.cookie.DedeUserID__ckMd5}; SESSDATA=${config.cookie.SESSDATA}; bili_jct=${config.cookie.bili_jct}; sid=${config.cookie.sid}`
+		if (!config.key) {
+			let confirm_uri = await getConfirm_uri()
+			let envType = $.getEnv()
+			if (envType === 'Surge') {
+				await captureAccess_key(confirm_uri)
+				await getRecentRequests()
+			}else if (envType === 'Quantumult X') {
+				await getAccess_key(confirm_uri)
+			}//'Loon need to do'
+		}
 		if (times === 1) {
 			$.setdata($.toStr(config), $.name + "_daily_bonus")
 				? $.msg($.name, "首次获取cookie", "🎉获取 cookie 成功")
@@ -137,6 +147,105 @@ function getCookie() {
 			$.msg($.name, "- 尚未登录, 请登录后重新获取cookie")
 		}
 	}
+}
+
+async function getConfirm_uri() {
+	var sign = md5("api=http://link.acg.tv/forum.php" + 'c2ed53a74eeefe3cf99fbd01d8c9c375')
+	const myRequest = {
+			url: "https://passport.bilibili.com/login/app/third?appkey=27eb53fc9058f8c3&api=http://link.acg.tv/forum.php&sign=" + sign,
+			headers: {
+				"cookie": config.cookieStr
+			}
+	}
+	return await $.http.get(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body?.code === 0) {
+				return body?.data?.confirm_uri
+			} else {
+				$.log("- 查询失败")
+				$.log("- 失败原因 " + body?.message)
+			}
+		} catch (e) {
+			$.logErr(e, response)
+		}
+	}, reason => {
+		$.log("- 失败原因 " + $.toStr(reason))
+		return "error"
+	})
+}
+
+function captureAccess_key(confirm_uri) {
+	return new Promise((resolve, reject) => {
+		const myRequest = {
+				url: confirm_uri,
+				headers: {
+					"cookie": config.cookieStr
+				}
+		}
+		$.get(myRequest,(err, resp, data) => {
+			if (err) reject(err)
+			else {
+				try {
+				} catch (e) {
+					$.logErr(e, resp)
+				} finally {
+					resolve()
+				}
+			}
+		})
+	})
+}
+
+function getAccess_key(confirm_uri) {
+	return new Promise((resolve, reject) => {
+		$.log("- 正在获取access_key, 请稍后")
+		const myRequest = {
+				url: confirm_uri,
+				headers: {
+					"cookie": config.cookieStr
+				},
+				opts: {
+					"redirection": false
+				}
+		}
+		$.get(myRequest,(err, resp, data) => {
+			if (err) reject(err)
+			else {
+				try {
+					const url = resp.headers.Location
+					if (url) {
+						config.key = url.match(/.*access_key=(.*?)&mid/)?.[1]
+					}
+				} catch (e) {
+					$.logErr(e, resp)
+				} finally {
+					resolve()
+				}
+			}
+		})
+	})
+}
+
+function getRecentRequests() {
+	return new Promise((resolve, reject) => {
+		$.log("- 正在获取最近请求列表, 请稍后")
+		$httpAPI("GET","/v1/requests/recent",null,(result) => {
+			if (!result) reject(result)
+			else {
+				try {
+					const url = result.requests.find(request => request.URL.includes("access_key"))?.URL;
+					if (url) {
+						config.key = url.match(/.*access_key=(.*?)&mid/)?.[1]
+					}
+				} catch (e) {
+					$.logErr(e, result)
+				} finally {
+					resolve()
+				}
+			}
+		})
+	})
 }
 
 async function signBiliBili() {
