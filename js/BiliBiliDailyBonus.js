@@ -1,7 +1,7 @@
 /*
 哔哩哔哩每日任务
 
-更新时间: 2023-10-07
+更新时间: 2023-10-14
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing（@ClydeTime）
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到/年度大会员每月B币券+等任务
@@ -298,6 +298,7 @@ async function signBiliBili() {
 		await silver2coin()
 		await vipScoreSign()
 		if (config.user.vipStatus === 1) {
+			await vipExtraEx()
 			await vipScoreGo()
 			await vipScoreFan()
 			await vipScoreMovie()
@@ -785,6 +786,47 @@ async function vipScoreSign() {
 			$.log("- 今日已完成")
 		}
 	}
+}
+
+function vipExtraEx() {
+	return new Promise((resolve, reject) => {
+		$.log("#### 大会员每日额外经验值")
+		const body = {
+			csrf: config.cookie.bili_jct,
+			mobi_app: 'iphone',
+			platform:'ios',
+			appkey:'27eb53fc9058f8c3',
+			access_key:`${config.key}`
+		}
+		const myRequest = {
+			url: "https://api.bilibili.com/x/vip/experience/add",
+			headers: {
+				'Accept:' : `application/json, text/plain, */*`,
+				'App-key': 'iphone'
+			},
+			body: $.queryStr(body)
+		}
+		$.post(myRequest, (err, resp, data) => {
+			if (err) reject(err)
+			else {
+				try {
+					const body = $.toObj(data)
+					if (body?.code == 0 && body?.message == "0") {
+						$.log("- 成功获得10经验值")
+						return true
+					} else {
+						$.log("- 每日额外经验任务失败")
+						$.log("- 失败原因 " + body?.message)
+						return false
+					}
+				} catch (e) {
+					$.logErr(e, resp)
+				} finally {
+					resolve()
+				}
+			}
+		})
+	})
 }
 
 function vipScoreGo() {
