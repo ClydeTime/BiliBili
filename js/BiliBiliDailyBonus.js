@@ -138,6 +138,9 @@ async function getCookie() {
 				if (original_config.cookie.bili_jct === config.cookie.bili_jct) {
 					$.log("- cookie未失效,无需更新")
 				} else {
+					if (original_config?.Settings) {
+						config.Settings = original_config.Settings
+					}
 					await setCookieToLocalStore(config, 2)
 				}
 			} else {
