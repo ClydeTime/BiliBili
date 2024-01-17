@@ -3,7 +3,7 @@ const URL = new URLs();
 const DataBase = {
 	"Modified":{
 		"Settings":{
-			"Switch":"true",
+			"Switch":true,
 			"Skin":{
 				"user_equip":1682863365001,
 				"load_equip":32263
@@ -40,7 +40,7 @@ const DataBase = {
 	const { Settings, Caches, Configs } = setENV("BiliBili", "Modified", DataBase);
 	$.log(`⚠ ${$.name}`, `Settings.Switch: ${Settings?.Switch}`, "");
 	switch (Settings?.Switch) {
-		case "true":
+		case true:
 		default:
 			let url = URL.parse($request?.url);
 			const METHOD = $request?.method, HOST = url?.host, PATH = url?.path, PATHs = PATH.split("/");

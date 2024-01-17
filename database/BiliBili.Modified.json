@@ -1,7 +1,7 @@
 {
 	"Settings":
 	{
-		"Switch": "true",
+		"Switch": true,
 		"Skin":
 		{
 			"user_equip": 1682863365001,
