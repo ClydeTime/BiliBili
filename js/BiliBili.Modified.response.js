@@ -499,6 +499,24 @@ const DataBase = {
 
 /***************** Function *****************/
 /**
+ * Set Environment Variables
+ * @author VirgilClyne
+ * @param {String} name - Persistent Store Key
+ * @param {Array} platforms - Platform Names
+ * @param {Object} database - Default DataBase
+ * @return {Object} { Settings, Caches, Configs }
+ */
+function setENV(name, platforms, database) {
+	$.log(`☑️ ${$.name}, Set Environment Variables`, "");
+	let { Settings, Caches, Configs } = getENV(name, platforms, database);
+	/***************** Settings *****************/
+	$.log(`✅ ${$.name}, Set Environment Variables`, `Settings: ${typeof Settings}`, `Settings内容: ${JSON.stringify(Settings)}`, "");
+	/***************** Caches *****************/
+	//$.log(`✅ ${$.name}, Set Environment Variables`, `Caches: ${typeof Caches}`, `Caches内容: ${JSON.stringify(Caches)}`, "");
+	/***************** Configs *****************/
+	return { Settings, Caches, Configs };
+};
+/**
  * Create New Raw Body
  * @author app2smile
  * @param {ArrayBuffer} header - unGzip Header
