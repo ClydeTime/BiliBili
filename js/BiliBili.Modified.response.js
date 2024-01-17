@@ -7,6 +7,14 @@ const DataBase = {
 			"Skin":{
 				"user_equip":1682863365001,
 				"load_equip":32263
+			},
+			"Private":{
+				"coin":"",
+				"bcoin":"",
+				"follower":"",
+				"level":"",
+				"like":"",
+				"vip":false
 			}
 		},
 		"Configs":{
@@ -17,6 +25,8 @@ const DataBase = {
 				"load_equip":[
 					{"id":2531,"name":"初音未来13周年","ver":"1598602035","loading_url":"https://i0.hdslb.com/bfs/garb/item/9b12e8b5cc16a4c2e71e91c43796f09d5e132847.webp"},{"id":4125,"name":"良辰美景·不问天","ver":"1612771141","loading_url":"https://i0.hdslb.com/bfs/garb/item/4d6ac226ba78cc4fe14c3c97f3bd0bb2e7166c73.webp"},{"id":32263,"name":"EveOneCat2","ver":"1632046310","loading_url":"https://i0.hdslb.com/bfs/garb/item/880560233ce3fe7bde792f619bc02ac7b59fb02a.webp"},{"id":34811,"name":"嘉然个性装扮2.0","ver":1650337335,"loading_url":"https://i0.hdslb.com/bfs/garb/item/fed79dceb1ea584a3f336e58689fbe5ae93f69a6.webp"},{"id":49391,"name":"提摩西小队第二弹","ver":"1677753596","loading_url":"https://i0.hdslb.com/bfs/garb/item/a248fb3fe86cf2009ce68e7e4d485b7c6229f6aa.webp"},{"id":1680172285001,"name":"豆豆摇头晃脑","ver":"1682766010","loading_url":"https://i0.hdslb.com/bfs/baselabs/op/0de868e5c679962dd4ef1187c6754ea4059eec4d89f0467dc0378b77eaf5c1c4.webp"},{"id":1680280135001,"name":"幻想乡的日常 第1弹","ver":"1680606000","loading_url":"https://i0.hdslb.com/bfs/baselabs/op/6f33bea9f45c5dac7468ab82065a66e3c1b415cb582a3d66a843d68b142f9ebd.webp"}
 				]
+			},
+			"Private":{
 			}
 		}
 	},
@@ -76,15 +86,194 @@ const DataBase = {
 									break;
 								case "x/v2/search/square": // 搜索页
 									break;
-								case "x/v2/account/myinfo": // 搜索页
-									 // 会员清晰度
-									if (data.vip.status !== 1) {
-										data.vip.type = 2;
-										data.vip.status = 1;
-										data.vip.vip_pay_type = 1;
-										data.vip.due_date = 2208960000; // Unix 时间戳 2040-01-01 00:00:00
-										data.vip.role = 3;
-										$.log(`🎉 ${$.name}`, "解锁会员清晰度");
+								case "x/v2/account/myinfo": // 信息页
+									if (Settings.Private.coin) {
+										data.coins = Settings.Private.coin;
+									}
+									if (Settings.Private.bcoin) {
+										data.bcoin = Settings.Private.bcoin;
+									}
+									if (Settings.Private.level) {
+										data.level = Settings.Private.level;
+									}
+									if (Settings.Private.vip) {
+										data.vip = {
+											type: 2,
+											status: 1,
+											due_date: 4102329600000,
+											vip_pay_type: 0,
+											theme_type: 0,
+											label: {
+												path: "",
+												text: "年度大会员",
+												label_theme: "hundred_annual_vip",
+												text_color: "#FFFFFF",
+												bg_style: 1,
+												bg_color: "#FB7299",
+												border_color: "",
+												use_img_label: true,
+												img_label_uri_hans: "",
+												img_label_uri_hant: "",
+												img_label_uri_hans_static: "https://i0.hdslb.com/bfs/vip/8d7e624d13d3e134251e4174a7318c19a8edbd71.png",
+												img_label_uri_hant_static: "https://i0.hdslb.com/bfs/activity-plat/static/20220614/e369244d0b14644f5e1a06431e22a4d5/VEW8fCC0hg.png"
+												},
+											avatar_subscript: 1,
+											nickname_color: "#FB7299",
+											role: 3,
+											avatar_subscript_url: "",
+											tv_vip_status: 1,
+											tv_vip_pay_type: 0
+										}
+									}
+									body.data = data;
+									break;
+								case "x/v2/account/mine": // 我的页
+									if (Settings.Private.coin) {
+										data.coin = Settings.Private.coin;
+									}
+									if (Settings.Private.bcoin) {
+										data.bcoin = Settings.Private.bcoin;
+									}
+									if (Settings.Private.follower) {
+										data.follower = Settings.Private.follower;
+									}
+									if (Settings.Private.level) {
+										data.level = Settings.Private.level;
+									}
+									if (Settings.Private.vip) {
+										data.senior_gate.identity = 2;
+										data.senior_gate.member_text = "硬核会员";
+										data.vip_type = 2;
+										data.achievement = {
+											senior_gate_flash:
+													{icon: "https://i0.hdslb.com/bfs/activity-plat/static/20220818/367d27000e27de458c114d7ca4ded948/6TQojRgCjO.webp"},
+											top_level_flash:
+													{icon: "https://i0.hdslb.com/bfs/activity-plat/static/20220818/367d27000e27de458c114d7ca4ded948/t5iD0zNIbM.webp"}
+										};
+										delete data.vip_section_v2;
+										delete data.vip_section;
+										data.vip = {
+											status: 1,
+											avatar_subscript: 1,
+											nickname_color: "#FB7299",
+											due_date: 4102329600000,
+											role: 3,
+											vip_pay_type: 0,
+											avatar_subscript_url: "",
+											label: {
+												bg_color: "#FB7299",
+												bg_style: 1,
+												text: "年度大会员",
+												border_color: "",
+												path: "",
+												image: "https://i0.hdslb.com/bfs/vip/8d7e624d13d3e134251e4174a7318c19a8edbd71.png",
+												label_theme: "hundred_annual_vip",
+												text_color: "#FFFFFF"
+											},
+											type: 2,
+											themeType: 0,
+											theme_type: 0
+										};
+									}
+									body.data = data;
+									break;
+								case "x/v2/space": // 空间页
+									if (Settings.Private.follower) {
+										data.card.fans = Settings.Private.follower;
+									}
+									if (Settings.Private.level) {
+										data.card.level_info.current_level = Settings.Private.level;
+									}
+									if (Settings.Private.vip) {
+										data.card.level_info.senior_inquiry.inquiry_text = "硬核会员";
+										data.card.vip = {
+											vipStatusWarn: "",
+											vipType: 2,
+											dueRemark: "",
+											vipDueDate: 4102329600000,
+											accessStatus: 0,
+											vipStatus: 1,
+											themeType: 0,
+											label: {
+												bg_color: "#FB7299",
+												bg_style: 1,
+												text: "年度大会员",
+												border_color: "",
+												path: "",
+												image: "https://i0.hdslb.com/bfs/vip/8d7e624d13d3e134251e4174a7318c19a8edbd71.png",
+												label_theme: "annual_vip",
+												text_color: "#FFFFFF"
+											}
+										};
+									}
+									if (Settings.Private.like) {
+										data.card.likes.like_num = Settings.Private.like;
+									}
+									body.data = data;
+									break;
+								case "x/vip/web/vip_center/combine": // 会员页
+									if (Settings.Private.vip) {
+										data.user.vip.theme_type = 0;
+										data.user.vip.label = {
+											img_label_uri_hans_static: "https://i0.hdslb.com/bfs/vip/8d7e624d13d3e134251e4174a7318c19a8edbd71.png",
+											use_img_label: true,
+											img_label_uri_hant_static: "https://i0.hdslb.com/bfs/vip/8d7e624d13d3e134251e4174a7318c19a8edbd71.png",
+											bg_color: "#FB7299",
+											bg_style: 1,
+											text: "年度大会员",
+											border_color: "",
+											img_label_uri_hans: "",
+											img_label_uri_hant: "",
+											label_theme: "hundred_annual_vip",
+											text_color: "#FFFFFF"
+										}
+										data.user.vip.vip_pay_type = 0,
+										data.user.vip.vip_due_date = 4102329600000,
+										data.user.vip.avatar_subscript = 1,
+										data.user.vip.is_new_user = false,
+										data.user.vip.tip_material = null,
+										data.user.vip.vip_type = 2,
+										data.user.vip.avatar_subscript_url = "https://i0.hdslb.com/bfs/vip/icon_Certification_big_member_22_3x.png",
+										data.user.vip.vip_status = 1,
+										data.user.vip.nickname_color = "#FB7299"
+										data.user.account_exception_text = "",
+										data.user.vip_keep_time = 946656000,
+										data.user.notice = {
+											tv_text: "",
+											surplus_seconds: 0,
+											tv_surplus_seconds: 0,
+											type: 0,
+											can_close: false,
+											text: ""
+										},
+										data.user.background_image_small = "",
+										data.user.is_auto_renew = false,
+										data.user.panel_sub_title = "",
+										data.user.tv = {
+											vip_pay_type: 0,
+											status: 1,
+											type: 1,
+											due_date: 4102329600000
+										},
+										data.user.background_image_big = "",
+										data.user.vip_overdue_explain = "年度大会员有效期 2099/12/31",
+										data.user.tv_overdue_explain = "超级大会员有效期 2099/12/31",
+										data.user.renew = {
+											link: "",
+											text: ""
+										}
+									}
+									body.data = data;
+									break;
+								case "x/vip/price/panel/lexi": // 会员页
+									if (Settings.Private.vip) {
+										data.basic.user_info = {
+											vip_status: 1,
+											vip_type: 2,
+											vip_overdue_time: 4102329600000,
+											tv_vip_overdue_time: 4102329600000,
+											tv_vip_status: 1
+										}
 									}
 									body.data = data;
 									break;

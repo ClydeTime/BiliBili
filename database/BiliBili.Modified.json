@@ -6,6 +6,14 @@
 		{
 			"user_equip": 1682863365001,
 			"load_equip": 32263
+		},
+		"Private":{
+			"coin":"",
+			"bcoin":"",
+			"follower":"",
+			"level":"",
+			"like":"",
+			"vip":false
 		}
 	},
 	"Configs":
@@ -732,6 +740,9 @@
 					"loading_url": "https://i0.hdslb.com/bfs/baselabs/op/6f33bea9f45c5dac7468ab82065a66e3c1b415cb582a3d66a843d68b142f9ebd.webp"
 				}
 			]
+		},
+		"Private":
+		{
 		}
 	}
 }

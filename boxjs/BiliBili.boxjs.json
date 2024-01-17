@@ -62,12 +62,13 @@
 			],
 			"descs_html":
 			[
-				"依次选择皮肤、加载动画",
+				"依次选择皮肤、加载动画、是否修改大会员等",
 				"选择完成后记得点击此页面底端右下角的\"保存\"。"
 			],
 			"keys":
 			[
-				"@BiliBili.Modified.Settings.Skin"
+				"@BiliBili.Modified.Settings.Skin",
+				"@BiliBili.Modified.Settings.Private"
 			],
 			"settings":
 			[
@@ -241,6 +242,48 @@
 							"label": "幻想乡的日常 第1弹"
 						}
 					]
+				},
+				{
+					"id": "@BiliBili.Modified.Settings.Private.vip",
+					"name": "大会员",
+					"val": false,
+					"type": "boolean",
+					"desc": "是否更改为大会员状态（自慰）"
+				},
+				{
+					"id": "@BiliBili.Modified.Settings.Private.coin",
+					"name": "硬币数",
+					"val": "",
+					"type": "text",
+					"desc": ""
+				},
+				{
+					"id": "@BiliBili.Modified.Settings.Private.bcoin",
+					"name": "B币数",
+					"val": "",
+					"type": "text",
+					"desc": ""
+				},
+				{
+					"id": "@BiliBili.Modified.Settings.Private.follower",
+					"name": "粉丝数",
+					"val": "",
+					"type": "text",
+					"desc": ""
+				},
+				{
+					"id": "@BiliBili.Modified.Settings.Private.level",
+					"name": "用户等级",
+					"val": "",
+					"type": "text",
+					"desc": "小于等于6"
+				},
+				{
+					"id": "@BiliBili.Modified.Settings.Private.like",
+					"name": "被赞次数",
+					"val": "",
+					"type": "text",
+					"desc": ""
 				}
 			]
 		}
