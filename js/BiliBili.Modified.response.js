@@ -87,16 +87,16 @@ const DataBase = {
 								case "x/v2/search/square": // 搜索页
 									break;
 								case "x/v2/account/myinfo": // 信息页
-									if (Settings.Private.coin) {
+									if (Settings?.Private?.coin) {
 										data.coins = Settings.Private.coin;
 									}
-									if (Settings.Private.bcoin) {
+									if (Settings?.Private.bcoin) {
 										data.bcoin = Settings.Private.bcoin;
 									}
-									if (Settings.Private.level) {
+									if (Settings?.Private.level) {
 										data.level = Settings.Private.level;
 									}
-									if (Settings.Private.vip) {
+									if (Settings?.Private.vip) {
 										data.vip = {
 											type: 2,
 											status: 1,
@@ -128,19 +128,19 @@ const DataBase = {
 									body.data = data;
 									break;
 								case "x/v2/account/mine": // 我的页
-									if (Settings.Private.coin) {
+									if (Settings?.Private?.coin) {
 										data.coin = Settings.Private.coin;
 									}
-									if (Settings.Private.bcoin) {
+									if (Settings?.Private?.bcoin) {
 										data.bcoin = Settings.Private.bcoin;
 									}
-									if (Settings.Private.follower) {
+									if (Settings?.Private?.follower) {
 										data.follower = Settings.Private.follower;
 									}
-									if (Settings.Private.level) {
+									if (Settings?.Private?.level) {
 										data.level = Settings.Private.level;
 									}
-									if (Settings.Private.vip) {
+									if (Settings?.Private?.vip) {
 										data.senior_gate.identity = 2;
 										data.senior_gate.member_text = "硬核会员";
 										data.vip_type = 2;
@@ -178,13 +178,13 @@ const DataBase = {
 									body.data = data;
 									break;
 								case "x/v2/space": // 空间页
-									if (Settings.Private.follower) {
+									if (Settings?.Private?.follower) {
 										data.card.fans = Settings.Private.follower;
 									}
-									if (Settings.Private.level) {
+									if (Settings?.Private?.level) {
 										data.card.level_info.current_level = Settings.Private.level;
 									}
-									if (Settings.Private.vip) {
+									if (Settings?.Private?.vip) {
 										data.card.level_info.senior_inquiry.inquiry_text = "硬核会员";
 										data.card.vip = {
 											vipStatusWarn: "",
@@ -206,13 +206,17 @@ const DataBase = {
 											}
 										};
 									}
-									if (Settings.Private.like) {
+									if (Settings?.Private?.like) {
 										data.card.likes.like_num = Settings.Private.like;
 									}
 									body.data = data;
 									break;
 								case "x/vip/web/vip_center/combine": // 会员页
-									if (Settings.Private.vip) {
+								$.log("type.vip:" + typeof(Settings?.Private?.vip));
+								$.log("type.switch:" + typeof(Settings?.Switch));
+								$.log(Settings?.Private?.vip);
+								$.log(Settings?.Switch);
+									if (Settings?.Private?.vip) {
 										data.user.vip.theme_type = 0;
 										data.user.vip.label = {
 											img_label_uri_hans_static: "https://i0.hdslb.com/bfs/vip/8d7e624d13d3e134251e4174a7318c19a8edbd71.png",
@@ -266,7 +270,7 @@ const DataBase = {
 									body.data = data;
 									break;
 								case "x/vip/price/panel/lexi": // 会员页
-									if (Settings.Private.vip) {
+									if (Settings?.Private?.vip) {
 										data.basic.user_info = {
 											vip_status: 1,
 											vip_type: 2,
