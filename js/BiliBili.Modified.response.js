@@ -244,10 +244,6 @@ const DataBase = {
 								case "pgc/page/cinema/tab": // 观影页
 									break;
 								case "x/vip/web/vip_center/combine": // 会员页
-									$.log("type.vip:" + typeof(Settings?.Private?.vip));
-									$.log("type.switch:" + typeof(Settings?.Switch));
-									$.log(Settings?.Private?.vip);
-									$.log(Settings?.Switch);
 									if (Settings?.Private?.vip) {
 										data.user.vip.theme_type = 0;
 										data.user.vip.label = {
@@ -310,6 +306,18 @@ const DataBase = {
 											tv_vip_overdue_time: 4102329600000,
 											tv_vip_status: 1
 										}
+									}
+									body.data = data;
+									break;
+								case "x/vip/top_panel_info": // 续费页
+									if (Settings?.Private?.vip) {
+										data.ever_vip = false;
+										data.vip_overdue_time = 0;
+										data.vip_type = 2;
+										data.tv = "超级大会员：有效期至2099-12-31";
+										data.vip_status = 1;
+										data.vip = "大会员：有效期至2099-12-31";
+										data.tv_vip_status = 1;
 									}
 									body.data = data;
 									break;
