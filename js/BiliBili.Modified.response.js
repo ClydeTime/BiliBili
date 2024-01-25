@@ -211,11 +211,43 @@ const DataBase = {
 									}
 									body.data = data;
 									break;
+								case "x/resource/show/skin": // 皮肤页
+									data.user_equip = Configs.Skin.user_equip.find(e => {
+										if (Settings.Skin.user_equip.toString() === e.id.toString()) {
+											$.log("切换皮肤为: "+ e.name);
+											return e;
+										}
+									});
+									data.load_equip = Configs.Skin.load_equip.find(e => {
+										if (Settings.Skin.load_equip.toString() === e.id.toString()) {
+											$.log("切换加载动画为: "+ e.name);
+											return e;
+										}
+									});
+									body.data = data;
+									break;
+							};
+							break;
+						case "api.bilibili.com":
+						case "api.biliapi.net":
+							switch (PATH) {
+								case "pgc/player/api/playurl": // 番剧-播放地址-api
+								case "pgc/player/web/playurl": // 番剧-播放地址-web
+								case "pgc/player/web/playurl/html5":  // 番剧-播放地址-web-HTML5
+									break;
+								case "pgc/view/v2/app/season": // 番剧页面-内容-app
+									break;
+								case "pgc/view/web/season": // 番剧-内容-web
+								case "pgc/view/pc/season": // 番剧-内容-pc
+									break;
+								case "pgc/page/bangumi": // 观影页
+								case "pgc/page/cinema/tab": // 观影页
+									break;
 								case "x/vip/web/vip_center/combine": // 会员页
-								$.log("type.vip:" + typeof(Settings?.Private?.vip));
-								$.log("type.switch:" + typeof(Settings?.Switch));
-								$.log(Settings?.Private?.vip);
-								$.log(Settings?.Switch);
+									$.log("type.vip:" + typeof(Settings?.Private?.vip));
+									$.log("type.switch:" + typeof(Settings?.Switch));
+									$.log(Settings?.Private?.vip);
+									$.log(Settings?.Switch);
 									if (Settings?.Private?.vip) {
 										data.user.vip.theme_type = 0;
 										data.user.vip.label = {
@@ -280,38 +312,6 @@ const DataBase = {
 										}
 									}
 									body.data = data;
-									break;
-								case "x/resource/show/skin": // 皮肤页
-									data.user_equip = Configs.Skin.user_equip.find(e => {
-										if (Settings.Skin.user_equip.toString() === e.id.toString()) {
-											$.log("切换皮肤为: "+ e.name);
-											return e;
-										}
-									});
-									data.load_equip = Configs.Skin.load_equip.find(e => {
-										if (Settings.Skin.load_equip.toString() === e.id.toString()) {
-											$.log("切换加载动画为: "+ e.name);
-											return e;
-										}
-									});
-									body.data = data;
-									break;
-							};
-							break;
-						case "api.bilibili.com":
-						case "api.biliapi.net":
-							switch (PATH) {
-								case "pgc/player/api/playurl": // 番剧-播放地址-api
-								case "pgc/player/web/playurl": // 番剧-播放地址-web
-								case "pgc/player/web/playurl/html5":  // 番剧-播放地址-web-HTML5
-									break;
-								case "pgc/view/v2/app/season": // 番剧页面-内容-app
-									break;
-								case "pgc/view/web/season": // 番剧-内容-web
-								case "pgc/view/pc/season": // 番剧-内容-pc
-									break;
-								case "pgc/page/bangumi": // 观影页
-								case "pgc/page/cinema/tab": // 观影页
 									break;
 								case "x/player/wbi/playurl": // UGC-用户生产内容-播放地址
 									break;
