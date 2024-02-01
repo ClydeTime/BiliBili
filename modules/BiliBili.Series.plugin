@@ -4,6 +4,7 @@
 #!author=VirgilClyne, MartinsKing
 #!manual=https://manual.biliuniverse.io
 #!icon=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/database/icon_Avatar.png
+#!category= MK
 
 [Rewrite]
 # 去除搜索中的默认关键词
