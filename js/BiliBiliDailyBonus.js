@@ -810,7 +810,7 @@ function vipExtraEx() {
 		const myRequest = {
 			url: "https://api.bilibili.com/x/vip/experience/add",
 			headers: {
-				'accept:' : 'application/json, text/plain, */*',
+				'accept': 'application/json, text/plain, */*',
 				'app-key': 'iphone'
 			},
 			body: $.queryStr(body)
