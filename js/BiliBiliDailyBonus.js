@@ -795,18 +795,23 @@ async function vipScoreSign() {
 function vipExtraEx() {
 	return new Promise((resolve, reject) => {
 		$.log("#### 大会员每日额外经验值")
-		const body = {
+		var body = {
 			csrf: config.cookie.bili_jct,
+			ts: parseInt($.startTime / 1000),
+			buvid: config.cookie.Buvid,
 			mobi_app: 'iphone',
 			platform:'ios',
 			appkey:'27eb53fc9058f8c3',
 			access_key:`${config.key}`
 		}
+		var sortedBody = $.queryStr(Object.fromEntries(new Map(Array.from(Object.entries(test)).sort())))
+		var sign = md5(sortedBody + 'c2ed53a74eeefe3cf99fbd01d8c9c375')
+		body['sign'] = sign
 		const myRequest = {
 			url: "https://api.bilibili.com/x/vip/experience/add",
 			headers: {
-				'Accept:' : `application/json, text/plain, */*`,
-				'App-key': 'iphone'
+				'accept:' : 'application/json, text/plain, */*',
+				'app-key': 'iphone'
 			},
 			body: $.queryStr(body)
 		}
