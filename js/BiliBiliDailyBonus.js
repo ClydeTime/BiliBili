@@ -804,7 +804,7 @@ function vipExtraEx() {
 			appkey:'27eb53fc9058f8c3',
 			access_key:`${config.key}`
 		}
-		var sortedBody = $.queryStr(Object.fromEntries(new Map(Array.from(Object.entries(test)).sort())))
+		var sortedBody = $.queryStr(Object.fromEntries(new Map(Array.from(Object.entries(body)).sort())))
 		var sign = md5(sortedBody + 'c2ed53a74eeefe3cf99fbd01d8c9c375')
 		body['sign'] = sign
 		const myRequest = {
