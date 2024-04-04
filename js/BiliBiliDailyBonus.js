@@ -809,7 +809,7 @@ async function vipWatchAccept() {
 	const body = {
 		csrf: config.cookie.bili_jct,
 		ts: $.getTimestamp(),
-		taskCode: 'ogvwatcnew',
+		taskCode: 'ogvwatchnew',
 		mobi_app: 'iphone',
 		platform: 'ios',
 		appkey: '27eb53fc9058f8c3',
