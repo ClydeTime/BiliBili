@@ -127,7 +127,7 @@ const DataBase = {
 									}
 									body.data = data;
 									break;
-								case "x/v2/account/mine": // 我的页
+								/* case "x/v2/account/mine": // 我的页，与其他插件冲突
 									if (Settings?.Private?.coin) {
 										data.coin = Settings.Private.coin;
 									}
@@ -176,7 +176,7 @@ const DataBase = {
 										};
 									}
 									body.data = data;
-									break;
+									break; */
 								case "x/v2/space": // 空间页
 									if (Settings?.Private?.follower) {
 										data.card.fans = Settings.Private.follower;
