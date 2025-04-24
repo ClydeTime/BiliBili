@@ -8,18 +8,18 @@
 
 #[rewrite_local]
 //Enhanced
-# BiliBili.Enhanced.x.resource.show.tab.v2
-^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/resource\/show\/tab\/v2\? url script-response-body https://raw.githubusercontent.com/BiliUniverse/Enhanced/main/js/BiliBili.Enhanced.response.js
-# BiliBili.Enhanced.x.v2.account.mine
-^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/account\/mine(\/ipad)?\? url script-response-body https://raw.githubusercontent.com/BiliUniverse/Enhanced/main/js/BiliBili.Enhanced.response.js
-# BiliBili.Enhanced.x.v2.region.index
-^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/region\/index\? url script-response-body https://raw.githubusercontent.com/BiliUniverse/Enhanced/main/js/BiliBili.Enhanced.response.js
-# BiliBili.Enhanced.x.v2.channel.region.list
-^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/channel\/region\/list\? url script-response-body https://raw.githubusercontent.com/BiliUniverse/Enhanced/main/js/BiliBili.Enhanced.response.js
+# 📺 BiliBili.Enhanced.x.resource.show.tab.v2
+^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/resource\/show\/tab\/v2\? url script-response-body https://github.com/BiliUniverse/Enhanced/releases/latest/download/response.bundle.js
+# 📺 BiliBili.Enhanced.x.v2.account.mine
+^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/account\/mine(\/ipad)?\? url script-response-body https://github.com/BiliUniverse/Enhanced/releases/latest/download/response.bundle.js
+# 📺 BiliBili.Enhanced.x.v2.region.index
+^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/region\/index\? url script-response-body https://github.com/BiliUniverse/Enhanced/releases/latest/download/response.bundle.js
+# 📺 BiliBili.Enhanced.x.v2.channel.region.list
+^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/channel\/region\/list\? url script-response-body https://github.com/BiliUniverse/Enhanced/releases/latest/download/response.bundle.js
 
 //ADBlock
 # 去除搜索中的默认关键词
-^https?:\/\/(grpc\.biliapi\.net|app\.bilibili\.com)\/bilibili\.app\.interface\.v1\.Search\/DefaultWords$ url reject
+^https?:\/\/(grpc|app)\.bili(bili\.com|api\.net)\/bilibili\.app\.interface\.v1\.Search\/DefaultWords$ url reject
 # 去除搜索中的大家都在搜
 ^https?:\/\/api\.vc\.bilibili\.com\/search_svr\/v\d\/Search\/recommend_words url reject-dict
 # 去除动态中的话题
@@ -32,63 +32,63 @@
 ^https?:\/\/manga\.bilibili\.com\/twirp\/comic\.v\d\.Comic\/Flash url reject-dict
 ^https?:\/\/manga\.bilibili\.com\/twirp\/comic\.v\d\.Comic\/ListFlash url reject-dict
 ^https?:\/\/api\.live\.bilibili\.com\/xlive\/e-commerce-interface\/v1\/ecommerce-user\/get_shopping_info\? url reject-dict
-# BiliBili.ADBlock.request.json
-^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/feed\/index\? url script-request-header https://raw.githubusercontent.com/BiliUniverse/ADBlock/main/js/BiliBili.ADBlock.request.js
-# BiliBili.ADBlock.response.json
-^https?:\/\/api\.live\.bilibili\.com\/xlive\/app-room\/v1\/index\/getInfoByRoom url script-response-body https://raw.githubusercontent.com/BiliUniverse/ADBlock/main/js/BiliBili.ADBlock.response.js
-^https?:\/\/api\.bilibili\.com\/x\/web-interface\/wbi\/index\/top\/feed\/rcmd\? url script-response-body https://raw.githubusercontent.com/BiliUniverse/ADBlock/main/js/BiliBili.ADBlock.response.js
-^https?:\/\/api\.bili(bili\.com|api\.net)\/pgc\/page\/(bangumi|cinema\/tab\?) url script-response-body https://raw.githubusercontent.com/BiliUniverse/ADBlock/main/js/BiliBili.ADBlock.response.js
-^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/(splash\/(brand\/list|event\/list2|list|show)|feed\/index(\/story)?|search\/square) url script-response-body https://raw.githubusercontent.com/BiliUniverse/ADBlock/main/js/BiliBili.ADBlock.response.js
-# BiliBili.ADBlock.response.grpc
-^https?:\/\/(grpc\.biliapi\.net|app\.bilibili\.com)\/bilibili\.app\.(view|viewunite)\.v1\.View\/(View|TFInfo)$ url script-response-body https://raw.githubusercontent.com/BiliUniverse/ADBlock/main/js/BiliBili.ADBlock.response.js
-^https?:\/\/(grpc\.biliapi\.net|app\.bilibili\.com)\/bilibili\.app\.dynamic\.v2\.Dynamic\/Dyn(All|Video)$ url script-response-body https://raw.githubusercontent.com/BiliUniverse/ADBlock/main/js/BiliBili.ADBlock.response.js
-^https?:\/\/(grpc\.biliapi\.net|app\.bilibili\.com)\/bilibili\.app\.playurl\.v1\.PlayURL\/PlayView$ url script-response-body https://raw.githubusercontent.com/BiliUniverse/ADBlock/main/js/BiliBili.ADBlock.response.js
-^https?:\/\/(grpc\.biliapi\.net|app\.bilibili\.com)\/bilibili\.polymer\.app\.search\.v1\.Search\/SearchAll$ url script-response-body https://raw.githubusercontent.com/BiliUniverse/ADBlock/main/js/BiliBili.ADBlock.response.js
-^https:\/\/(grpc\.biliapi\.net|app\.bilibili\.com)\/bilibili\.community\.service\.dm\.v1\.DM\/(DmView|DmSegMobile) url script-response-body https://raw.githubusercontent.com/BiliUniverse/ADBlock/main/js/BiliBili.ADBlock.response.js
-^https:\/\/(grpc\.biliapi\.net|app\.bilibili\.com)\/bilibili\.app\.interface\.v1\.Teenagers\/ModeStatus url script-response-body https://raw.githubusercontent.com/BiliUniverse/ADBlock/main/js/BiliBili.ADBlock.response.js
-^https:\/\/(grpc\.biliapi\.net|app\.bilibili\.com)\/bilibili\.main\.community\.reply\.v1\.Reply\/MainList url script-response-body https://raw.githubusercontent.com/BiliUniverse/ADBlock/main/js/BiliBili.ADBlock.response.js
+# 📺 BiliBili.ADBlock.request.json
+^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/feed\/index\? url script-request-header https://github.com/BiliUniverse/ADBlock/releases/latest/download/request.bundle.js
+# 📺 BiliBili.ADBlock.response.json
+^https?:\/\/api\.live\.bilibili\.com\/xlive\/app-room\/v1\/index\/getInfoByRoom url script-response-body https://github.com/BiliUniverse/ADBlock/releases/latest/download/response.bundle.js
+^https?:\/\/api\.bilibili\.com\/x\/web-interface\/wbi\/index\/top\/feed\/rcmd\? url script-response-body https://github.com/BiliUniverse/ADBlock/releases/latest/download/response.bundle.js
+^https?:\/\/api\.bili(bili\.com|api\.net)\/pgc\/page\/(bangumi|cinema\/tab\?) url script-response-body https://github.com/BiliUniverse/ADBlock/releases/latest/download/response.bundle.js
+^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/(splash\/(brand\/list|event\/list2|list|show)|feed\/index(\/story)?|search\/square) url script-response-body https://github.com/BiliUniverse/ADBlock/releases/latest/download/response.bundle.js
+# 📺 BiliBili.ADBlock.response.grpc
+^https?:\/\/(grpc|app)\.bili(bili\.com|api\.net)\/bilibili\.app\.(view|viewunite)\.v1\.View\/(View|TFInfo|RelatesFeed)$ url script-response-body https://github.com/BiliUniverse/ADBlock/releases/latest/download/response.bundle.js
+^https?:\/\/(grpc|app)\.bili(bili\.com|api\.net)\/bilibili\.app\.dynamic\.v2\.Dynamic\/Dyn(All|Video)$ url script-response-body https://github.com/BiliUniverse/ADBlock/releases/latest/download/response.bundle.js
+^https?:\/\/(grpc|app)\.bili(bili\.com|api\.net)\/bilibili\.app\.playurl\.v1\.PlayURL\/PlayView$ url script-response-body https://github.com/BiliUniverse/ADBlock/releases/latest/download/response.bundle.js
+^https?:\/\/(grpc|app)\.bili(bili\.com|api\.net)\/bilibili\.polymer\.app\.search\.v1\.Search\/SearchAll$ url script-response-body https://github.com/BiliUniverse/ADBlock/releases/latest/download/response.bundle.js
+^https:\/\/(grpc|app)\.bili(bili\.com|api\.net)\/bilibili\.community\.service\.dm\.v1\.DM\/(DmView|DmSegMobile) url script-response-body https://github.com/BiliUniverse/ADBlock/releases/latest/download/response.bundle.js
+^https:\/\/(grpc|app)\.bili(bili\.com|api\.net)\/bilibili\.app\.interface\.v1\.Teenagers\/ModeStatus url script-response-body https://github.com/BiliUniverse/ADBlock/releases/latest/download/response.bundle.js
+^https:\/\/(grpc|app)\.bili(bili\.com|api\.net)\/bilibili\.main\.community\.reply\.v1\.Reply\/MainList url script-response-body https://github.com/BiliUniverse/ADBlock/releases/latest/download/response.bundle.js
 
 //Global
-# BiliBili.Global.bangumi.play.html
-^https?:\/\/www\.bilibili\.com\/bangumi\/play\/(ss|ep)\d+\/? url script-analyze-echo-response https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.request.js
+# 📺 BiliBili.Global.bangumi.play.html
+^https?:\/\/www\.bilibili\.com\/bangumi\/play\/(ss|ep)\d+\/? url script-request-body https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js
 
-# BiliBili.Global.viewunite.v1.View.grpc
-^https?:\/\/(grpc\.biliapi\.net|app\.bilibili\.com)\/bilibili\.app\.viewunite\.v1\.View\/View$ url script-request-body https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.request.js
-^https?:\/\/(grpc\.biliapi\.net|app\.bilibili\.com)\/bilibili\.app\.viewunite\.v1\.View\/View$ url script-response-body https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.response.js
-# BiliBili.Global.season.json
-^https?:\/\/api\.bili(bili\.com|api\.net)\/pgc\/view\/(v2\/app|web|pc)\/season\? url script-request-body https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.request.js
-^https?:\/\/api\.bili(bili\.com|api\.net)\/pgc\/view\/(v2\/app|web|pc)\/season\? url script-response-body https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.response.js
+# 📺 BiliBili.Global.viewunite.v1.View.grpc
+^https?:\/\/(grpc|app)\.bili(bili\.com|api\.net)\/bilibili\.app\.viewunite\.v1\.View\/View$ url script-request-body https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js
+^https?:\/\/(grpc|app)\.bili(bili\.com|api\.net)\/bilibili\.app\.viewunite\.v1\.View\/View$ url script-response-body https://github.com/BiliUniverse/Global/releases/latest/download/response.bundle.js
+# 📺 BiliBili.Global.season.json
+^https?:\/\/api\.bili(bili\.com|api\.net)\/pgc\/view\/(v2\/app|web|pc)\/season\? url script-request-body https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js
+^https?:\/\/api\.bili(bili\.com|api\.net)\/pgc\/view\/(v2\/app|web|pc)\/season\? url script-response-body https://github.com/BiliUniverse/Global/releases/latest/download/response.bundle.js
 
-# BiliBili.Global.playerunite.v1.Player.grpc
-^https?:\/\/(grpc\.biliapi\.net|app\.bilibili\.com)\/bilibili\.app\.playerunite\.v1\.Player\/PlayViewUnite$ url script-analyze-echo-response https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.request.js
-# BiliBili.Global.player.v2.PlayURL.grpc
-^https?:\/\/(grpc\.biliapi\.net|app\.bilibili\.com)\/bilibili\.pgc\.gateway\.player\.v2\.PlayURL\/PlayView$ url script-analyze-echo-response https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.request.js
-# BiliBili.Global.player.playurl.json
-^https?:\/\/api\.bili(bili\.com|api\.net)\/pgc\/player\/(api|web)\/playurl(\/html5)?\? url script-analyze-echo-response https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.request.js
-# BiliBili.Global.player.v2.playurl.json
-^https?:\/\/api\.bili(bili\.com|api\.net)\/pgc\/player\/web\/v2\/playurl\? url script-analyze-echo-response https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.request.js
+# 📺 BiliBili.Global.playerunite.v1.Player.grpc
+^https?:\/\/(grpc|app)\.bili(bili\.com|api\.net)\/bilibili\.app\.playerunite\.v1\.Player\/PlayViewUnite$ url script-request-body https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js
+# 📺 BiliBili.Global.player.v2.PlayURL.grpc
+^https?:\/\/(grpc|app)\.bili(bili\.com|api\.net)\/bilibili\.pgc\.gateway\.player\.v2\.PlayURL\/PlayView$ url script-request-body https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js
+# 📺 BiliBili.Global.player.playurl.json
+^https?:\/\/api\.bili(bili\.com|api\.net)\/pgc\/player\/(api|web)\/playurl(\/html5)?\? url script-request-body https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js
+# 📺 BiliBili.Global.player.v2.playurl.json
+^https?:\/\/api\.bili(bili\.com|api\.net)\/pgc\/player\/web\/v2\/playurl\? url script-request-body https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js
 
-# BiliBili.Global.search.html
-^https?:\/\/search\.bilibili\.com\/all\? url script-analyze-echo-response https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.request.js
-# BiliBili.Global.search.grpc
-^https?:\/\/(grpc\.biliapi\.net|app\.bilibili\.com)\/bilibili\.polymer\.app\.search\.v1\.Search\/(SearchAll|SearchByType)$ url script-analyze-echo-response https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.request.js
-# BiliBili.Global.search.app.json
-^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/search(\/type)?\? url script-analyze-echo-response https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.request.js
-# BiliBili.Global.search.wbi.json
-^https?:\/\/api\.bili(bili\.com|api\.net)\/x\/web-interface\/wbi\/search\/(all\/v2|type)\? url script-analyze-echo-response https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.request.js
-# BiliBili.Global.search.pc.json
-^https?:\/\/api\.bili(bili\.com|api\.net)\/x\/web-interface\/search\/(all\/v2|type)\? url script-analyze-echo-response https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.request.js
+# 📺 BiliBili.Global.search.html
+^https?:\/\/search\.bilibili\.com\/all\? url script-request-body https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js
+# 📺 BiliBili.Global.search.grpc
+^https?:\/\/(grpc|app)\.bili(bili\.com|api\.net)\/bilibili\.polymer\.app\.search\.v1\.Search\/(SearchAll|SearchByType)$ url script-request-body https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js
+# 📺 BiliBili.Global.search.app.json
+^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/search(\/type)?\? url script-request-body https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js
+# 📺 BiliBili.Global.search.wbi.json
+^https?:\/\/api\.bili(bili\.com|api\.net)\/x\/web-interface\/wbi\/search\/(all\/v2|type)\? url script-request-body https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js
+# 📺 BiliBili.Global.search.pc.json
+^https?:\/\/api\.bili(bili\.com|api\.net)\/x\/web-interface\/search\/(all\/v2|type)\? url script-request-body https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js
 
-# BiliBili.Global.space.app.json
-^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/space\? url script-analyze-echo-response https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.request.js
-# BiliBili.Global.space.wbi.json
-^https?:\/\/api\.bili(bili\.com|api\.net)\/x\/space\/wbi\/acc\/info\? url script-analyze-echo-response https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.request.js
-# BiliBili.Global.space.pc.json
-^https?:\/\/api\.bili(bili\.com|api\.net)\/x\/space\/acc\/info\? url script-analyze-echo-response https://raw.githubusercontent.com/BiliUniverse/Global/main/js/BiliBili.Global.request.js
+# 📺 BiliBili.Global.space.app.json
+^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/space\? url script-request-body https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js
+# 📺 BiliBili.Global.space.wbi.json
+^https?:\/\/api\.bili(bili\.com|api\.net)\/x\/space\/wbi\/acc\/info\? url script-request-body https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js
+# 📺 BiliBili.Global.space.pc.json
+^https?:\/\/api\.bili(bili\.com|api\.net)\/x\/space\/acc\/info\? url script-request-body https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js
 
 //Modified
 ^https?:\/\/app\.bilibili\.com\/x\/resource\/show\/skin\? url script-response-body https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, argument=
-^https:\/\/app\.bilibili\.com\/x\/v2\/(account\/(myinfo|mine)|space) url script-response-body https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, argument=
+^https:\/\/app\.bilibili\.com\/x\/v2\/(account\/(myinfo|mine)|space)([\/?]|$) url script-response-body https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, argument=
 ^https:\/\/api\.bilibili\.com\/x\/vip\/(web\/vip_center\/combine|price\/panel\/lexi) url script-response-body https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, argument=
 
 #[MITM]
