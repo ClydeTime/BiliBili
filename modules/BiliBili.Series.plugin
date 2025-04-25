@@ -67,9 +67,9 @@ http-request ^https?:\/\/api\.bili(bili\.com|api\.net)\/x\/space\/wbi\/acc\/info
 http-request ^https?:\/\/api\.bili(bili\.com|api\.net)\/x\/space\/acc\/info\? script-path=https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js, tag=📺 BiliBili.Global.space.pc.json, argument=[{ForceHost},{Locales},{Proxies.CHN},{Proxies.HKG},{Proxies.MAC},{Proxies.TWN},{LogLevel}]
 
 //Modified
-http-response ^https?:\/\/app\.bilibili\.com\/x\/resource\/show\/skin\? requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, tag=BiliBili.Modified.x.resource.show.skin, argument=
-http-response ^https:\/\/app\.bilibili\.com\/x\/v2\/(account\/(myinfo|mine)|space)([\/?]|$) requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, tag=BiliBili.Modified.x.v2, argument=
-http-response ^https:\/\/api\.bilibili\.com\/x\/vip\/(web\/vip_center\/combine|price\/panel\/lexi) requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, tag=BiliBili.Modified.x.vip, argument=
+http-response ^https?:\/\/app\.bilibili\.com\/x\/resource\/show\/skin\? requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, tag=📺 BiliBili.Modified.x.resource.show.skin, argument=
+http-response ^https:\/\/app\.bilibili\.com\/x\/v2\/(account\/(myinfo|mine)|space)([\/?]|$) requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, tag=📺 BiliBili.Modified.x.v2, argument=
+http-response ^https:\/\/api\.bilibili\.com\/x\/vip\/(web\/vip_center\/combine|price\/panel\/lexi|top_panel_info) requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, tag=📺 BiliBili.Modified.x.vip, argument=
 
 [MitM]
 hostname = manga.bilibili.com, api.live.bilibili.com, api.vc.bilibili.com, www.bilibili.com, app.bilibili.com, app.biliapi.net, search.bilibili.com, api.bilibili.com, api.global.bilibili.com, api.biliapi.net, grpc.biliapi.net

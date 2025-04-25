@@ -178,7 +178,7 @@ const DataBase = {
 									body.data = data;
 									break;
 								case "x/v2/space": // 空间页
-									if (data.default_tab === "home") {
+									if ($request.headers['x-bili-mid'] === data.card.mid) { //判断为用户本人，其他人不做修改
 										if (Settings?.Private?.follower) {
 											data.card.fans = Settings.Private.follower;
 										}

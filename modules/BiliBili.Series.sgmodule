@@ -69,9 +69,9 @@
 📺 BiliBili.Global.space.pc.json = type=http-request, pattern=^https?:\/\/api\.bili(bili\.com|api\.net)\/x\/space\/acc\/info\?, script-path=https://github.com/BiliUniverse/Global/releases/latest/download/request.bundle.js, argument=ForceHost="{{{ForceHost}}}"&Locales="{{{Locales}}}"&Proxies.CHN="{{{Proxies.CHN}}}"&Proxies.HKG="{{{Proxies.HKG}}}"&Proxies.MAC="{{{Proxies.MAC}}}"&Proxies.TWN="{{{Proxies.TWN}}}"&LogLevel="{{{LogLevel}}}"
 
 //Modified
-BiliBili.Modified.x.resource.show.skin = type=http-response, pattern=^https?:\/\/app\.bilibili\.com\/x\/resource\/show\/skin\?, requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, argument=
-BiliBili.Modified.x.v2 = type=http-response, pattern=^https:\/\/app\.bilibili\.com\/x\/v2\/(account\/(myinfo|mine)|space)([\/?]|$), requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, argument=
-BiliBili.Modified.x.vip = type=http-response, pattern=^https:\/\/api\.bilibili\.com\/x\/vip\/(web\/vip_center\/combine|price\/panel\/lexi), requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, argument=
+📺 BiliBili.Modified.x.resource.show.skin = type=http-response, pattern=^https?:\/\/app\.bilibili\.com\/x\/resource\/show\/skin\?, requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, argument=
+📺 BiliBili.Modified.x.v2 = type=http-response, pattern=^https:\/\/app\.bilibili\.com\/x\/v2\/(account\/(myinfo|mine)|space)([\/?]|$), requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, argument=
+📺 BiliBili.Modified.x.vip = type=http-response, pattern=^https:\/\/api\.bilibili\.com\/x\/vip\/(web\/vip_center\/combine|price\/panel\/lexi|top_panel_info), requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, argument=
 
 [MITM]
 hostname = %APPEND% manga.bilibili.com, api.live.bilibili.com, api.vc.bilibili.com, www.bilibili.com, search.bilibili.com, app.bilibili.com, app.biliapi.net, api.bilibili.com, api.biliapi.net, grpc.biliapi.net

@@ -6,9 +6,9 @@
 #!category= MK
 
 [Script]
-http-response ^https?:\/\/app\.bilibili\.com\/x\/resource\/show\/skin\? requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, tag=BiliBili.Modified.x.resource.show.skin, argument=
-http-response ^https:\/\/app\.bilibili\.com\/x\/v2\/(account\/myinfo|space) requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, tag=BiliBili.Modified.x.v2, argument=
-http-response ^https:\/\/api\.bilibili\.com\/x\/vip\/(web\/vip_center\/combine|price\/panel\/lexi|top_panel_info) requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, tag=BiliBili.Modified.x.vip, argument=
+http-response ^https?:\/\/app\.bilibili\.com\/x\/resource\/show\/skin\? requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, tag=📺 BiliBili.Modified.x.resource.show.skin, argument=
+http-response ^https:\/\/app\.bilibili\.com\/x\/v2\/(account\/(myinfo|mine)|space)([\/?]|$) requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, tag=📺 BiliBili.Modified.x.v2, argument=
+http-response ^https:\/\/api\.bilibili\.com\/x\/vip\/(web\/vip_center\/combine|price\/panel\/lexi|top_panel_info) requires-body=1, script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBili.Modified.response.js, tag=📺 BiliBili.Modified.x.vip, argument=
 
 [MitM]
 hostname = app.bilibili.com, api.bilibili.com
