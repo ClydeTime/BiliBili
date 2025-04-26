@@ -15,9 +15,9 @@
 # BiliBili每日等级任务
 cron "30 7 * * *" script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站每日等级任务
 
-http-request ^https?:\/\/app\.bilibili\.com\/x\/resource\/fingerprint\? script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站Cookie(APP)
+http-request ^https?:\/\/cm\.bilibili\.com\/cm\/api\/fees\/wise$ script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站Cookie(APP)
 
 http-request ^https?:\/\/m.bilibili.com/$ script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站Cookie(网页)
 
 [MITM]
-hostname = app.bilibili.com, m.bilibili.com
+hostname = cm.bilibili.com, m.bilibili.com
