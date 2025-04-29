@@ -11,13 +11,17 @@
 # 订阅地址：https://raw.githubusercontent.com/ClydeTime/BiliBili/main/boxjs/BiliBili.boxjs.json
 # 更新时间：2023-06-02
 
+[Argument]
+网页Cookie = switch,true,tag=[开关] 网页Cookie,desc=是否启用此处修改
+APPCookie = switch,true,tag=[开关] APPCookie,desc=是否启用此处修改
+
 [Script]
 # BiliBili每日等级任务
 cron "30 7 * * *" script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站每日等级任务
 
-http-request ^https?:\/\/cm\.bilibili\.com\/cm\/api\/fees\/wise$ script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站Cookie(APP)
+http-request ^https?:\/\/cm\.bilibili\.com\/cm\/api\/fees\/wise$ script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站Cookie(APP), enable={APPCookie}
 
-http-request ^https?:\/\/m.bilibili.com/$ script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站Cookie(网页)
+http-request ^https?:\/\/m.bilibili.com/$ script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站Cookie(网页), enable={网页Cookie}
 
 [MITM]
 hostname = cm.bilibili.com, m.bilibili.com
