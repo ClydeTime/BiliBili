@@ -1,7 +1,7 @@
 /*
-哔哩哔哩每日任务(V1.2)
+哔哩哔哩每日任务(V1.3)
 
-更新时间: 2025-01-31
+更新时间: 2025-05-07
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing（@ClydeTime）
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到/年度大会员每月B币券+等任务
@@ -18,8 +18,8 @@
 QX, Surge, Loon说明：
 ************************
 1.获取cookie
-	①后台退出手机B站客户端的情况下, 重新打开APP进入主页
-	②通过网址「https://www.bilibili.com」登录（`暂不支持Loon`）
+	①后台退出手机B站客户端的情况下, 重新打开APP进入主页, 保持脚本常驻确保cookie不过期
+	②通过扫码方式获得长期cookie, 获取后关闭脚本, 注意如使用②方式, 必须关闭①方式, 否则无意义
 如通知成功获取cookie, 则可以使用此签到脚本.
 脚本将在每天上午7点30执行.
 2.投币设置
@@ -74,54 +74,68 @@ const isFlag = exec_times =>
 	config.share.num === 0 ||
 	(config.coins.num < exec_times * 10 && Math.floor(config.user.money) > 5)
 
-const persistentStore = async config => {
-	if (config.cookie.DedeUserID) {
-		const url = $request.url
-		config.key = url.match(/.*access_key=(.*?)&/)?.[1]
-		config.cookieStr = `DedeUserID=${config.cookie.DedeUserID}; DedeUserID__ckMd5=${config.cookie.DedeUserID__ckMd5}; SESSDATA=${config.cookie.SESSDATA}; bili_jct=${config.cookie.bili_jct}; sid=${config.cookie.sid}`
-		if (!config.key) { //网页方式登录
-			let auth_code = "0", access_key = "0", login_confirm = false
-			auth_code = await getAuthCode()
-			if (auth_code !== "0") login_confirm = await loginConfirm(auth_code)
-			if (login_confirm) access_key = await getAccessKey(auth_code)
-			if (access_key !== "0") {
-				config.key = access_key
-			} else {
-				$.log("- 获取用户access_key失败!")
-				$.msg($.name, "🤒获取用户access_key失败!")
-			}
+const persistentStore = config => {
+		const PStoreConfig = $.getItem($.name + "_daily_bonus", {})
+		if (PStoreConfig.cookie && PStoreConfig.cookie.bili_jct !== config.cookie.bili_jct) {
+			config.FirstInsert = false
+		} else if (PStoreConfig.cookie) {
+			return $.log("- cookie未失效,无需更新")
+		} else {
+			config.FirstInsert = true
 		}
 		const isFirstInsert = config.FirstInsert
 		delete config.FirstInsert
-		$.log($.toStr(config))
 		const successMessage = $.setItem($.name + "_daily_bonus", $.toStr(config))
 			? "🎉cookie存储成功"
 			: "🤒cookie存储失败"
 		$.msg($.name, isFirstInsert ? "首次获取cookie" : "检测到cookie已更新", successMessage)
-	} else {
-		$.msg($.name, "- 尚未登录, 请登录后重新获取cookie")
-	}
+		$.log($.name + ": " +`${isFirstInsert ? "首次获取cookie" : "检测到cookie已更新"}`)
+		$.log(successMessage)
 }
 
 const $ = new Env("bilibili")
 const startTime = format()
 let cards = []
-let config = {
-	cookie: {},
-	cookieStr: "",
-	key: "",
-	user: {},
-	watch: {},
-	share: {},
-	coins: {},
-	score: {}
+let config = $.getItem($.name + "_daily_bonus", {})
+if (!config.cookie) {
+	config = {
+		cookie: {},
+		cookieStr: "",
+		key: "",
+		user: {},
+		watch: {},
+		share: {},
+		coins: {},
+		score: {}
+	}
 }
 let real_times //实际需要投币次数
 
 !(async () => {
-	if (typeof $request != "undefined") {
+	if ("object" === typeof $response) {
+		if(!config.matchTime || (Date.now() - config.matchTime) > 10000) {
+			config.matchTime = Date.now()
+			$.setItem($.name + "_daily_bonus", $.toStr(config))
+		} else {
+			if ((Date.now() - config.matchTime) < 10000) return $.log("- Blocked: interval <10s")
+		}
 		$.log("- 正在获取cookie, 请稍后")
 		await getCookie()
+	} else if ("object" === typeof $request) {
+		let Cookie = $request.headers.cookie || $request.headers.Cookie
+		if (Cookie) {
+			config.cookie = string2object(Cookie)
+			if (config.cookie.DedeUserID) {
+				const url = $request.url
+				config.key = url.match(/.*access_key=(.*?)&/)?.[1]
+				config.cookieStr = `DedeUserID=${config.cookie.DedeUserID}; DedeUserID__ckMd5=${config.cookie.DedeUserID__ckMd5}; SESSDATA=${config.cookie.SESSDATA}; bili_jct=${config.cookie.bili_jct}; sid=${config.cookie.sid}`
+			} else {
+				return $.msg($.name, "- 获取cookie信息异常")
+			}
+			persistentStore(config)
+		} else {
+			$.msg($.name, "- 未发现有效cookie信息")
+		}
 	} else {
 		await signBiliBili()
 	}
@@ -130,26 +144,38 @@ let real_times //实际需要投币次数
 	.finally(() => $.done())
 
 async function getCookie() {
-	if ("object" === typeof $request) {
-		let Cookie = $request.headers.cookie || $request.headers.Cookie
-		if (Cookie) {
-			config.cookie = string2object(Cookie)
-			const PStoreConfig = $.getItem($.name + "_daily_bonus", {})
-			if (PStoreConfig.cookie && PStoreConfig.cookie.bili_jct !== config.cookie.bili_jct) {
-				if (PStoreConfig.Settings) config.Settings = PStoreConfig.Settings // 同步boxjs数据
-				config.FirstInsert = false
-				$.log($.toStr(config))
-				await persistentStore(config)
-			} else if (PStoreConfig.cookie) {
-				$.log("- cookie未失效,无需更新")
-			} else {
-				config.FirstInsert = true
-				await persistentStore(config)
-			}
-		} else {
-			$.msg($.name, "- 尚未登录, 请登录后重新获取cookie")
-		}
+	const qrCode = await getQrcode()
+	if (qrCode === "0") return $.msg($.name, "- 获取二维码失败！")
+	await $.wait(10000)
+	let login_confirm = await handleLoginConfirmation(qrCode)
+	await loop(0, login_confirm, qrCode)
+}
+
+async function loop(times, login_confirm, qrCode) {
+  if (times >= 3) return $.msg("- 扫码确认失败！")
+	if (login_confirm === 0) return
+	++times
+	await $.wait(5000)
+	login_confirm = await handleLoginConfirmation(qrCode)
+  await loop(times, login_confirm, qrCode)
+}
+
+async function handleLoginConfirmation(qrCode) {
+	const login_confirm = await loginConfirm(qrCode)
+	switch (login_confirm) {
+		case 0:
+			$.msg("- 扫码确认成功！")
+			break;
+		case 1:
+			$.msg("- 用户尚未扫码")
+			break;
+		case 2:
+			$.msg("- 用户已扫码尚未确认")
+			break;
+		default:
+			$.msg("- 扫码确认失败！")
 	}
+	return login_confirm;
 }
 
 async function signBiliBili() {
@@ -247,30 +273,30 @@ async function signBiliBili() {
 	}
 }
 
-async function getAuthCode() {
+async function getQrcode() {
 	const body = {
 		appkey: "27eb53fc9058f8c3",
 		local_id: 0,
-		ts: $.getTimestamp()
+		ts: $.getTimestamp(),
+		mobi_app: 'iphone'
 	}
 	const sortedBody = $.queryStr(Object.fromEntries(new Map(Array.from(Object.entries(body)).sort())))
 	const sign = md5(sortedBody + 'c2ed53a74eeefe3cf99fbd01d8c9c375')
 	body['sign'] = sign
 	const myRequest = {
 		url: "https://passport.bilibili.com/x/passport-tv-login/qrcode/auth_code",
-		headers: {
-			"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
-		},
 		body: $.queryStr(body)
 	}
 	return await $.fetch(myRequest).then(response => {
 		try {
 			const body = $.toObj(response.body)
 			if (body.code === 0 && body.message === "0") {
-				$.log("- 获取auth_code成功")
+				let media_url = `https://tool.lu/qrcode/basic.html?text=https://passport.bilibili.com/x/passport-tv-login/h5/qrcode/auth?auth_code=${body.data.auth_code}&mobi_app=iphone`
+				$.msg($.name + "扫码", "使用客户端扫描以下二维码", "请20s内完成扫码,长按推送放大二维码并截图", { 'open-url': media_url, 'media-url': media_url })
+				$.log("二维码已生成，如在通知中获取图片失败，请使用浏览器打开以下地址,有效期三分钟\n" + `${media_url}`)
 				return body.data.auth_code
 			} else {
-				$.log("- 获取auth_code失败")
+				$.log("- 生成Qrcode失败")
 				return "0"
 			}
 		} catch (e) {
@@ -280,36 +306,6 @@ async function getAuthCode() {
 }
 
 async function loginConfirm(auth_code) {
-	const body = {
-		auth_code,
-		build: 7082000,
-		csrf: config.cookie.bili_jct
-	}
-	const myRequest = {
-		url: "https://passport.bilibili.com/x/passport-tv-login/h5/qrcode/confirm",
-		headers: {
-			"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-			'cookie': `DedeUserID=${config.cookie.DedeUserID}; SESSDATA=${config.cookie.SESSDATA}`
-		},
-		body: $.queryStr(body)
-	}
-	return await $.fetch(myRequest).then(response => {
-		try {
-			const body = $.toObj(response.body)
-			if (body.code === 0 && body.message === "0") {
-				$.log("- 确认登录成功")
-				return true
-			} else {
-				$.log("- 确认登录失败")
-				return false
-			}
-		} catch (e) {
-			$.logErr(e, response)
-		}
-	})
-}
-
-async function getAccessKey(auth_code) {
 	const body = {
 		appkey: "27eb53fc9058f8c3",
 		auth_code,
@@ -330,12 +326,35 @@ async function getAccessKey(auth_code) {
 		try {
 			const body = $.toObj(response.body)
 			if (body.code === 0 && body.message === "0") {
-				$.log("- 获取access_key成功")
-				return body.data.access_token
-			} else {
-				$.log("- 获取access_key失败")
-				return "0"
+				$.log("- 确认登录成功")
+				//$.log("body: " + $.toStr(body))
+				if (!body.data.cookie_info) {
+						$.msg($.name, "- 数据异常，请重试")
+						return 1
+				}
+				const cookieString = body.data.cookie_info.cookies
+						.map(cookie => `${cookie.name}=${cookie.value}`)
+						.join('; ')
+				config.cookieStr = cookieString
+				config.cookie = string2object(cookieString)
+				config.key = body.data.access_token
+				persistentStore(config)
+				return 0
 			}
+		
+			const statusMap = {
+					86039: { msg: "- 二维码尚未确认", ret: 1 },
+					86090: { msg: "- 二维码已扫码未确认", ret: 2 }
+			};
+			
+			if (body.code in statusMap) {
+					const { msg, ret } = statusMap[body.code]
+					$.log(msg)
+					return ret
+			}
+			
+			$.log("- 确认登录未成功")
+			return 3;
 		} catch (e) {
 			$.logErr(e, response)
 		}
@@ -1116,4 +1135,4 @@ function md5(r){function n(r,n){return r<<n|r>>>32-n}function t(r,n){var t,o,e,u
 // prettier-ignore
 // https://github.com/chavyleung/scripts/blob/master/Env.min.js
 
-function Env(a,b){var c=Math.floor;return new class{constructor(a,b){this.name=a,this.version="1.7.4",this.data=null,this.logs=[],this.isMute=!1,this.isNeedRewrite=!1,this.logSeparator="\n",this.encoding="utf-8",this.startTime=new Date().getTime(),Object.assign(this,b),this.log("",`🔔${this.name}, 开始!`)}platform(){return"undefined"!=typeof $environment&&$environment["surge-version"]?"Surge":"undefined"!=typeof $environment&&$environment["stash-version"]?"Stash":"undefined"==typeof module||!module.exports?"undefined"==typeof $task?"undefined"==typeof $loon?"undefined"==typeof $rocket?"undefined"==typeof Egern?void 0:"Egern":"Shadowrocket":"Loon":"Quantumult X":"Node.js"}isQuanX(){return"Quantumult X"===this.platform()}isSurge(){return"Surge"===this.platform()}isLoon(){return"Loon"===this.platform()}isShadowrocket(){return"Shadowrocket"===this.platform()}isStash(){return"Stash"===this.platform()}isEgern(){return"Egern"===this.platform()}toObj(a,b=null){try{return JSON.parse(a)}catch{return b}}toStr(a,b=null){try{return JSON.stringify(a)}catch{return b}}lodash_get(a={},b="",c=void 0){Array.isArray(b)||(b=this.toPath(b));const d=b.reduce((a,b)=>Object(a)[b],a);return d===void 0?c:d}lodash_set(a={},b="",c){return Array.isArray(b)||(b=this.toPath(b)),b.slice(0,-1).reduce((a,c,d)=>Object(a[c])===a[c]?a[c]:a[c]=/^\d+$/.test(b[d+1])?[]:{},a)[b[b.length-1]]=c,a}toPath(a){return a.replace(/\[(\d+)\]/g,".$1").split(".").filter(Boolean)}getItem(a=new String,b=null){let c=b;switch(a.startsWith("@")){case!0:const{key:b,path:d}=a.match(/^@(?<key>[^.]+)(?:\.(?<path>.*))?$/)?.groups;a=b;let e=this.getItem(a,{});"object"!=typeof e&&(e={}),c=this.lodash_get(e,d);try{c=JSON.parse(c)}catch(a){}break;default:switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Egern":case"Shadowrocket":c=$persistentStore.read(a);break;case"Quantumult X":c=$prefs.valueForKey(a);break;default:c=this.data?.[a]||null}try{c=JSON.parse(c)}catch(a){}}return c??b}setItem(a=new String,b=new String){let c=!1;switch(typeof b){case"object":b=JSON.stringify(b);break;default:b=b+""}switch(a.startsWith("@")){case!0:const{key:d,path:e}=a.match(/^@(?<key>[^.]+)(?:\.(?<path>.*))?$/)?.groups;a=d;let f=this.getItem(a,{});"object"!=typeof f&&(f={}),this.lodash_set(f,e,b),c=this.setItem(a,f);break;default:switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Egern":case"Shadowrocket":c=$persistentStore.write(b,a);break;case"Quantumult X":c=$prefs.setValueForKey(b,a);break;default:c=this.data?.[a]||null}}return c}async fetch(a={},b={}){switch(a.constructor){case Object:a={...a,...b};break;case String:a={url:a,...b}}a.method||(a.method=a.body??a.bodyBytes?"POST":"GET"),delete a.headers?.Host,delete a.headers?.[":authority"],delete a.headers?.["Content-Length"],delete a.headers?.["content-length"];const c=a.method.toLocaleLowerCase();switch(this.platform()){case"Loon":case"Surge":case"Stash":case"Egern":case"Shadowrocket":default:return a.policy&&(this.isLoon()&&(a.node=a.policy),this.isStash()&&this.lodash_set(a,"headers.X-Stash-Selected-Proxy",encodeURI(a.policy))),a.followRedirect&&((this.isSurge()||this.isLoon())&&(a["auto-redirect"]=!1),this.isQuanX()&&(a.opts?a.opts.redirection=!1:a.opts={redirection:!1})),a.bodyBytes&&!a.body&&(a.body=a.bodyBytes,delete a.bodyBytes),await new Promise((b,d)=>{$httpClient[c](a,(c,e,f)=>{c?d(c):(e.ok=/^2\d\d$/.test(e.status),e.statusCode=e.status,f&&(e.body=f,!0==a["binary-mode"]&&(e.bodyBytes=f)),b(e))})});case"Quantumult X":return a.policy&&this.lodash_set(a,"opts.policy",a.policy),"boolean"==typeof a["auto-redirect"]&&this.lodash_set(a,"opts.redirection",a["auto-redirect"]),a.body instanceof ArrayBuffer?(a.bodyBytes=a.body,delete a.body):ArrayBuffer.isView(a.body)?(a.bodyBytes=a.body.buffer.slice(a.body.byteOffset,a.body.byteLength+a.body.byteOffset),delete object.body):a.body&&delete a.bodyBytes,await $task.fetch(a).then(a=>(a.ok=/^2\d\d$/.test(a.statusCode),a.status=a.statusCode,a),a=>Promise.reject(a.error))}}time(a,b=null){const d=b?new Date(b):new Date;let e={"M+":d.getMonth()+1,"d+":d.getDate(),"H+":d.getHours(),"m+":d.getMinutes(),"s+":d.getSeconds(),"q+":c((d.getMonth()+3)/3),S:d.getMilliseconds()};for(let c in /(y+)/.test(a)&&(a=a.replace(RegExp.$1,(d.getFullYear()+"").slice(4-RegExp.$1.length))),e)new RegExp("("+c+")").test(a)&&(a=a.replace(RegExp.$1,1==RegExp.$1.length?e[c]:("00"+e[c]).slice((""+e[c]).length)));return a}getBaseURL(a){return a.replace(/[?#].*$/,"")}isAbsoluteURL(a){return /^[a-z][a-z0-9+.-]*:/.test(a)}getURLParameters(a){return(a.match(/([^?=&]+)(=([^&]*))/g)||[]).reduce((b,a)=>(b[a.slice(0,a.indexOf("="))]=a.slice(a.indexOf("=")+1),b),{})}getTimestamp(a=new Date){return c(a.getTime()/1e3)}queryStr(a){let b=[];for(let c in a)a.hasOwnProperty(c)&&b.push(`${c}=${a[c]}`);let c=b.join("&");return c}queryObj(a){let b={},c=a.split("&");for(let d of c){let a=d.split("="),c=a[0],e=a[1]||"";c&&(b[c]=e)}return b}msg(a=this.name,b="",c="",d){const e=a=>{switch(typeof a){case void 0:return a;case"string":switch(this.platform()){case"Surge":case"Stash":case"Egern":default:return{url:a};case"Loon":case"Shadowrocket":return a;case"Quantumult X":return{"open-url":a}}case"object":switch(this.platform()){case"Surge":case"Stash":case"Egern":case"Shadowrocket":default:{let b=a.url||a.openUrl||a["open-url"];return{url:b}}case"Loon":{let b=a.openUrl||a.url||a["open-url"],c=a.mediaUrl||a["media-url"];return{openUrl:b,mediaUrl:c}}case"Quantumult X":{let b=a["open-url"]||a.url||a.openUrl,c=a["media-url"]||a.mediaUrl,d=a["update-pasteboard"]||a.updatePasteboard;return{"open-url":b,"media-url":c,"update-pasteboard":d}}}default:}};if(!this.isMute)switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Shadowrocket":default:$notification.post(a,b,c,e(d));break;case"Quantumult X":$notify(a,b,c,e(d))}}log(...a){0<a.length&&(this.logs=[...this.logs,...a]),console.log(a.join(this.logSeparator))}logErr(a,b){switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Egern":case"Shadowrocket":case"Quantumult X":default:this.log("",`❗️${this.name}, 错误!`,a,b)}}wait(a){return new Promise(b=>setTimeout(b,a))}done(a={}){const b=new Date().getTime(),c=(b-this.startTime)/1e3;switch(this.log("",`🔔${this.name}, 结束! 🕛 ${c} 秒`),this.platform()){case"Surge":a.policy&&this.lodash_set(a,"headers.X-Surge-Policy",a.policy),$done(a);break;case"Loon":a.policy&&(a.node=a.policy),$done(a);break;case"Stash":a.policy&&this.lodash_set(a,"headers.X-Stash-Selected-Proxy",encodeURI(a.policy)),$done(a);break;case"Egern":$done(a);break;case"Shadowrocket":default:$done(a);break;case"Quantumult X":a.policy&&this.lodash_set(a,"opts.policy",a.policy),delete a["auto-redirect"],delete a["auto-cookie"],delete a["binary-mode"],delete a.charset,delete a.host,delete a.insecure,delete a.method,delete a.opt,delete a.path,delete a.policy,delete a["policy-descriptor"],delete a.scheme,delete a.sessionIndex,delete a.statusCode,delete a.timeout,a.body instanceof ArrayBuffer?(a.bodyBytes=a.body,delete a.body):ArrayBuffer.isView(a.body)?(a.bodyBytes=a.body.buffer.slice(a.body.byteOffset,a.body.byteLength+a.body.byteOffset),delete a.body):a.body&&delete a.bodyBytes,$done(a)}}}(a,b)}
+function Env(e,t){return new class{constructor(e,t){this.name=e,this.version="1.7.4",this.data=null,this.logs=[],this.isMute=!1,this.isNeedRewrite=!1,this.logSeparator="\n",this.encoding="utf-8",this.startTime=(new Date).getTime(),Object.assign(this,t),this.log("",`🔔${this.name}, 开始!`)}platform(){return"undefined"!=typeof $environment&&$environment["surge-version"]?"Surge":"undefined"!=typeof $environment&&$environment["stash-version"]?"Stash":"undefined"!=typeof module&&module.exports?"Node.js":"undefined"!=typeof $task?"Quantumult X":"undefined"!=typeof $loon?"Loon":"undefined"!=typeof $rocket?"Shadowrocket":"undefined"!=typeof Egern?"Egern":void 0}isQuanX(){return"Quantumult X"===this.platform()}isSurge(){return"Surge"===this.platform()}isLoon(){return"Loon"===this.platform()}isShadowrocket(){return"Shadowrocket"===this.platform()}isStash(){return"Stash"===this.platform()}isEgern(){return"Egern"===this.platform()}toObj(e,t=null){try{return JSON.parse(e)}catch{return t}}toStr(e,t=null){try{return JSON.stringify(e)}catch{return t}}lodash_get(e={},t="",s){Array.isArray(t)||(t=this.toPath(t));const o=t.reduce(((e,t)=>Object(e)[t]),e);return void 0===o?s:o}lodash_set(e={},t="",s){return Array.isArray(t)||(t=this.toPath(t)),t.slice(0,-1).reduce(((e,s,o)=>Object(e[s])===e[s]?e[s]:e[s]=/^\d+$/.test(t[o+1])?[]:{}),e)[t[t.length-1]]=s,e}toPath(e){return e.replace(/\[(\d+)\]/g,".$1").split(".").filter(Boolean)}getItem(e=new String,t=null){let s=t;switch(e.startsWith("@")){case!0:const{key:t,path:o}=e.match(/^@(?<key>[^.]+)(?:\.(?<path>.*))?$/)?.groups;e=t;let r=this.getItem(e,{});"object"!=typeof r&&(r={}),s=this.lodash_get(r,o);try{s=JSON.parse(s)}catch(e){}break;default:switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Egern":case"Shadowrocket":s=$persistentStore.read(e);break;case"Quantumult X":s=$prefs.valueForKey(e);break;default:s=this.data?.[e]||null;break}try{s=JSON.parse(s)}catch(e){}break}return s??t}setItem(e=new String,t=new String){let s=!1;switch(typeof t){case"object":t=JSON.stringify(t);break;default:t=String(t);break}switch(e.startsWith("@")){case!0:const{key:o,path:r}=e.match(/^@(?<key>[^.]+)(?:\.(?<path>.*))?$/)?.groups;e=o;let a=this.getItem(e,{});"object"!=typeof a&&(a={}),this.lodash_set(a,r,t),s=this.setItem(e,a);break;default:switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Egern":case"Shadowrocket":s=$persistentStore.write(t,e);break;case"Quantumult X":s=$prefs.setValueForKey(t,e);break;default:s=this.data?.[e]||null;break}break}return s}async fetch(e={}||"",t={}){switch(e.constructor){case Object:e={...e,...t};break;case String:e={url:e,...t};break}e.method||(e.method=e.body??e.bodyBytes?"POST":"GET"),e.headers?.Host,e.headers?.[":authority"],e.headers?.["Content-Length"],e.headers?.["content-length"];const s=e.method.toLocaleLowerCase();switch(this.platform()){case"Loon":case"Surge":case"Stash":case"Egern":case"Shadowrocket":default:return e.policy&&(this.isLoon()&&(e.node=e.policy),this.isStash()&&this.lodash_set(e,"headers.X-Stash-Selected-Proxy",encodeURI(e.policy))),e.followRedirect&&((this.isSurge()||this.isLoon())&&(e["auto-redirect"]=!1),this.isQuanX()&&(e.opts?e.opts.redirection=!1:e.opts={redirection:!1})),e.bodyBytes&&!e.body&&(e.body=e.bodyBytes,delete e.bodyBytes),await new Promise(((t,o)=>{$httpClient[s](e,((s,r,a)=>{s?o(s):(r.ok=/^2\d\d$/.test(r.status),r.statusCode=r.status,a&&(r.body=a,1==e["binary-mode"]&&(r.bodyBytes=a)),t(r))}))}));case"Quantumult X":return e.policy&&this.lodash_set(e,"opts.policy",e.policy),"boolean"==typeof e["auto-redirect"]&&this.lodash_set(e,"opts.redirection",e["auto-redirect"]),e.body instanceof ArrayBuffer?(e.bodyBytes=e.body,delete e.body):ArrayBuffer.isView(e.body)?(e.bodyBytes=e.body.buffer.slice(e.body.byteOffset,e.body.byteLength+e.body.byteOffset),delete object.body):e.body&&delete e.bodyBytes,await $task.fetch(e).then((e=>(e.ok=/^2\d\d$/.test(e.statusCode),e.status=e.statusCode,e)),(e=>Promise.reject(e.error)))}}time(e,t=null){const s=t?new Date(t):new Date;let o={"M+":s.getMonth()+1,"d+":s.getDate(),"H+":s.getHours(),"m+":s.getMinutes(),"s+":s.getSeconds(),"q+":Math.floor((s.getMonth()+3)/3),S:s.getMilliseconds()};/(y+)/.test(e)&&(e=e.replace(RegExp.$1,(s.getFullYear()+"").slice(4-RegExp.$1.length)));for(let t in o)new RegExp("("+t+")").test(e)&&(e=e.replace(RegExp.$1,1==RegExp.$1.length?o[t]:("00"+o[t]).slice((""+o[t]).length)));return e}getBaseURL(e){return e.replace(/[?#].*$/,"")}isAbsoluteURL(e){return/^[a-z][a-z0-9+.-]*:/.test(e)}getURLParameters(e){return(e.match(/([^?=&]+)(=([^&]*))/g)||[]).reduce(((e,t)=>(e[t.slice(0,t.indexOf("="))]=t.slice(t.indexOf("=")+1),e)),{})}getTimestamp(e=new Date){return Math.floor(e.getTime()/1e3)}queryStr(e){let t=[];for(let s in e)e.hasOwnProperty(s)&&t.push(`${s}=${e[s]}`);return t.join("&")}queryObj(e){let t={},s=e.split("&");for(let e of s){let s=e.split("="),o=s[0],r=s[1]||"";o&&(t[o]=r)}return t}msg(e=this.name,t="",s="",o={}){const r=e=>{const{$open:t,$copy:s,$media:o,$mediaMime:r}=e;switch(typeof e){case void 0:return e;case"string":switch(this.platform()){case"Surge":case"Stash":case"Egern":default:return{url:e};case"Loon":case"Shadowrocket":return e;case"Quantumult X":return{"open-url":e}}case"object":switch(this.platform()){case"Surge":case"Stash":case"Egern":case"Shadowrocket":default:{const a={};let i=e.openUrl||e.url||e["open-url"]||t;i&&Object.assign(a,{action:"open-url",url:i});let n=e["update-pasteboard"]||e.updatePasteboard||s;n&&Object.assign(a,{action:"clipboard",text:n});let l=e.mediaUrl||e["media-url"]||o;if(l){let e,t;if(l.startsWith("http"));else if(l.startsWith("data:")){const[s]=l.split(";"),[,o]=l.split(",");e=o,t=s.replace("data:","")}else{e=l,t=(e=>{const t={JVBERi0:"application/pdf",R0lGODdh:"image/gif",R0lGODlh:"image/gif",iVBORw0KGgo:"image/png","/9j/":"image/jpg"};for(var s in t)if(0===e.indexOf(s))return t[s];return null})(l)}Object.assign(a,{"media-url":l,"media-base64":e,"media-base64-mime":r??t})}return Object.assign(a,{"auto-dismiss":e["auto-dismiss"],sound:e.sound}),a}case"Loon":{const s={};let r=e.openUrl||e.url||e["open-url"]||t;r&&Object.assign(s,{openUrl:r});let a=e.mediaUrl||e["media-url"]||o;return a&&Object.assign(s,{mediaUrl:a}),console.log(JSON.stringify(s)),s}case"Quantumult X":{const r={};let a=e["open-url"]||e.url||e.openUrl||t;a&&Object.assign(r,{"open-url":a});let i=e.mediaUrl||e["media-url"]||o;i&&Object.assign(r,{"media-url":i});let n=e["update-pasteboard"]||e.updatePasteboard||s;return n&&Object.assign(r,{"update-pasteboard":n}),console.log(JSON.stringify(r)),r}}default:return}};if(!this.isMute)switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Shadowrocket":default:$notification.post(e,t,s,r(o));break;case"Quantumult X":$notify(e,t,s,r(o));break}}log(...e){e.length>0&&(this.logs=[...this.logs,...e]),console.log(e.join(this.logSeparator))}logErr(e,t){switch(this.platform()){case"Surge":case"Loon":case"Stash":case"Egern":case"Shadowrocket":case"Quantumult X":default:this.log("",`❗️${this.name}, 错误!`,e,t);break}}wait(e){return new Promise((t=>setTimeout(t,e)))}done(e={}){const t=((new Date).getTime()-this.startTime)/1e3;switch(this.log("",`🔔${this.name}, 结束! 🕛 ${t} 秒`),this.platform()){case"Surge":e.policy&&this.lodash_set(e,"headers.X-Surge-Policy",e.policy),$done(e);break;case"Loon":e.policy&&(e.node=e.policy),$done(e);break;case"Stash":e.policy&&this.lodash_set(e,"headers.X-Stash-Selected-Proxy",encodeURI(e.policy)),$done(e);break;case"Egern":$done(e);break;case"Shadowrocket":default:$done(e);break;case"Quantumult X":e.policy&&this.lodash_set(e,"opts.policy",e.policy),delete e["auto-redirect"],delete e["auto-cookie"],delete e["binary-mode"],delete e.charset,delete e.host,delete e.insecure,delete e.method,delete e.opt,delete e.path,delete e.policy,delete e["policy-descriptor"],delete e.scheme,delete e.sessionIndex,delete e.statusCode,delete e.timeout,e.body instanceof ArrayBuffer?(e.bodyBytes=e.body,delete e.body):ArrayBuffer.isView(e.body)?(e.bodyBytes=e.body.buffer.slice(e.body.byteOffset,e.body.byteLength+e.body.byteOffset),delete e.body):e.body&&delete e.bodyBytes,$done(e);break}}}(e,t)}

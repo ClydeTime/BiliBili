@@ -5,23 +5,24 @@
 #!icon=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/database/icon_Avatar.png
 #!category= MK
 # 现将获取cookie与定时任务合并为一个模块
-# 保持开启,如检测到cookie变更会自动更新,解决cookie经常过期的问题(cookie仍有效不提醒更新)
-# 任务奖励：经验值/硬币/大会员积分/年度会员领取B币等
+# 使用APP获取cookie,保持B站Cookie(APP)开启,如检测到cookie变更会自动更新,解决cookie经常过期的问题(cookie仍有效不提醒更新)
+# 使用扫码获取cookie,保持B站Cookie(扫码)开启,打开APP后,根据推送提示操作获取cookie,此方式cookie存活时间较长,使用后需关闭脚本,cookie失效后再次打开即可
+# 用户可选择自行开启或关闭,两种获取方式不可兼用
 # ================ Boxjs订阅 ================
 # 订阅地址：https://raw.githubusercontent.com/ClydeTime/BiliBili/main/boxjs/BiliBili.boxjs.json
-# 更新时间：2023-06-02
+# 更新时间：2025-05-07
 
 [Argument]
-网页Cookie = switch,true,tag=[开关] 网页Cookie,desc=是否启用此处修改
+扫码Cookie = switch,false,tag=[开关] 网页Cookie,desc=是否启用此处修改
 APPCookie = switch,true,tag=[开关] APPCookie,desc=是否启用此处修改
 
 [Script]
 # BiliBili每日等级任务
 cron "30 7 * * *" script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站每日等级任务
 
-http-request ^https?:\/\/cm\.bilibili\.com\/cm\/api\/fees\/wise$ script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站Cookie(APP), enable={APPCookie}
+http-reponse ^https?:\/\/app\.bilibili\.com\/x\/resource\/fingerprint\? script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站Cookie(扫码), enable={扫码Cookie}, timeout=30
 
-http-request ^https?:\/\/m.bilibili.com/$ script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站Cookie(网页), enable={网页Cookie}
+http-request ^https?:\/\/app\.bilibili\.com\/x\/resource\/fingerprint\? script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站Cookie(APP), enable={APPCookie}
 
 [MITM]
-hostname = cm.bilibili.com, m.bilibili.com
+hostname = app.bilibili.com
