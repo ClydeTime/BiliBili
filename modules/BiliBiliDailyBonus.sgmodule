@@ -4,18 +4,21 @@
 #!homepage= https://github.com/ClydeTime/BiliBili/tree/master
 #!icon=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/database/icon_Avatar.png
 #!category= MK
-#!arguments = script_QrCode:B站Cookie(扫码),script_APP:B站Cookie(APP)
+#!arguments = script_QrCode:B站Cookie(扫码),script_APP:B站Cookie(APP),bigPoint:#B站观看剧集大积分
 # 现将获取cookie与定时任务合并为一个模块
 # 使用APP获取cookie,保持B站Cookie(APP)开启,如检测到cookie变更会自动更新,解决cookie经常过期的问题(cookie仍有效不提醒更新)
 # 使用扫码获取cookie,保持B站Cookie(扫码)开启,打开APP后,根据推送提示操作获取cookie,此方式cookie存活时间较长,使用后需关闭脚本,cookie失效后再次打开即可
 # 用户可选择自行开启或关闭,两种获取方式不可兼用,如需关闭,点击模块右侧三个点或长按模块,选择编辑参数,将script_QrCode或script_APP设置为#即可
+# 大会员用户用户可选择开启bigPoint定时任务(删除「#B站观看剧集大积分」内的#),以此获取观看剧集大积分,非大会员用户忽略即可
 # 任务奖励：经验值/硬币/大会员积分/年度会员领取B币等
 # ================ Boxjs订阅 ================
 # 订阅地址：https://raw.githubusercontent.com/ClydeTime/BiliBili/main/boxjs/BiliBili.boxjs.json
-# 更新时间：2025-05-07
+# 更新时间：2025-05-15
 
 [Script]
 B站每日任务 = type=cron,cronexp=30 7 * * *,script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js,wake-system=1,timeout=15
+
+{{{bigPoint}}} = type=cron,cronexp=41 7 * * *,script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js,wake-system=1,timeout=15
 
 {{{script_QrCode}}} = type=http-response,pattern=^https?:\/\/app\.bilibili\.com\/x\/resource\/fingerprint\?,script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js,requires-body=0,timeout=30
 

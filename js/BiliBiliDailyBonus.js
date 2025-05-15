@@ -1,7 +1,7 @@
 /*
-哔哩哔哩每日任务(V1.4)
+哔哩哔哩每日任务(V1.5)
 
-更新时间: 2025-05-12
+更新时间: 2025-05-15
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing（@ClydeTime）
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到/年度大会员每月B币券+等任务
@@ -13,7 +13,7 @@
 	年度大会员每月B币券会在每月1号、15号尝试领取，确保应用正常运行, 以防漏领;
 	年度大会员自动充电会在每次领劵之后进行, 默认为自己充电, B币多的用户可自行到boxjs设置，以防误充.
 使用声明: ⚠️此脚本仅供学习与交流，请勿贩卖！⚠️
-脚本参考: Nobyda、Wyatt1026、ABreadTree、chavyleung、SocialSisterYi
+脚本参考: Nobyda、Wyatt1026、ABreadTree、chavyleung、SocialSisterYi、catlair
 ************************
 QX, Surge, Loon说明：
 ************************
@@ -84,7 +84,7 @@ const persistentStore = config => {
 	const isCookieValid = PStoreConfig.cookie?.bili_jct === config.cookie.bili_jct
 	const isSameUser = PStoreConfig.cookie?.DedeUserID === config.cookie.DedeUserID
 	if (PStoreConfig.cookie && !isCookieValid) {
-		!isSameUser && (config = config?.Settings && Object.keys(config.Settings).length ? { Settings: config.Settings } : {})
+		!isSameUser && (config = PStoreConfig?.Settings ? {...config, Settings: PStoreConfig.Settings} : config)
 		config.FirstInsert = false
 	} else if (PStoreConfig.cookie) {
 		return $.log("- cookie未失效,无需更新")
@@ -170,11 +170,9 @@ async function signBiliBili() {
 			}
 
 			$.log("3️⃣ 投币任务")
-			if (typeof config.coins.failures !== 'undefined' && config.coins.failures > 0){
-				config.coins.failures = 0    //重置投币失败次数
-			}
+			config.coins?.failures > 0 && (config.coins.failures = 0)//重置投币失败次数
 			if (real_times === 0){
-				$.log(`- 今日已完成 ${config.coins.time}`)
+				$.log(`- 今日已完成 记录于${config.coins.time}`)
 			} else {
 				for (let i = 0; i < real_times && (Math.floor(config.user.money) > 5 || ($.log("- 硬币不足,投币失败"), false)); i++) await coin()
 			}
@@ -185,44 +183,57 @@ async function signBiliBili() {
 		
 		//await liveSign() //已下线
 		await silver2coin()
+		let vipMessage = ''
 		if (config.user.vipStatus === 1) {
 			$.log("---- 开始大会员额外任务")
 			const experience = await vipExtraExStatus()
+			let vipExtraExRet = false
 			experience === 0 ? $.log("- 大会员额外经验领取情况查询失败")
-				: experience?.state === 0 ? await vipExtraEx() 
-					: $.log("- 今日额外经验任务已完成")
+				: experience?.state === 0 ? vipExtraExRet = await vipExtraEx() 
+					: ($.log("- 今日额外经验任务已完成"), vipExtraExRet = true)
 			const signStatus =  await bigScoreSignStatus()
+			let bigScoreSignRet = false
 			signStatus === 0 ? $.log("- 大积分三日签到任务完成情况查询失败")
-				: signStatus?.three_day_sign?.signed === false ? await bigScoreSign()
-					: $.log("- 今日大积分三日签到任务已完成")
+				: signStatus?.three_day_sign?.signed === false ? bigScoreSignRet = await bigScoreSign()
+					: ($.log("- 今日大积分三日签到任务已完成"), bigScoreSignRet = true)
 			const scoreStatus = await bigScoreStatus()
 			if (scoreStatus === 0) $.log("- 大积分完成情况查询失败")
 
 			const commonTaskItem = scoreStatus.task_info?.modules?.find(item => item.module_title === "日常任务")?.common_task_item || null
+			const tasks = 
+				[{ code: "dress-view", fn: bigScoreDressView, title: "浏览装扮商城主页", success: false },
+				{ code: "vipmallview", fn: bigScoreVipMallView, title: "浏览会员购页面10秒", success: false },
+				{ code: "filmtab", fn: bigScoreFilmTab, title: "浏览影视频道页10秒", success: false },
+				{ code: "animatetab", fn: bigScoreAnimateTab, title: "浏览追番频道页10秒", success: false },
+				{ code: "ogvwatchnew", fn: bigScoreOgvWatchNew, title: "观看剧集内容", success: false }]
 			if (!commonTaskItem) {//查询失败直接梭哈
-				for (const fn of [bigScoreSign, bigScoreDressView, bigScoreVipMallView, bigScoreFilmTab, bigScoreAnimateTab, bigScoreOgvWatchNewAccept]) await fn();
+				for (let t in tasks) tasks[t].success = await tasks[t].fn()
 			} else {
-				const tasks = 
-				[{ code: "dress-view", fn: bigScoreDressView, title: "浏览装扮商城主页" },
-				{ code: "vipmallview", fn: bigScoreVipMallView, title: "浏览会员购页面10秒" },
-				{ code: "filmtab", fn: bigScoreFilmTab, title: "浏览影视频道页10秒" },
-				{ code: "animatetab", fn: bigScoreAnimateTab, title: "浏览追番频道页10秒" },
-				{ code: "ogvwatchnew", fn: bigScoreOgvWatchNewAccept, title: "接取观看剧集内容" }]
-				for (const {code, fn, title} of tasks) await (commonTaskItem.find(i => i.task_code === code)?.state !== 3 ? ($.log(`- 查询到${title}任务未完成`), fn()) : $.log(`- 今日${title}任务已完成`))
+				for (let t in tasks) commonTaskItem.find(i => i.task_code === tasks[t].code)?.state !== 3 ? tasks[t].success = ($.log(`#### 执行${tasks[t].title}任务`), await tasks[t].fn()) : ($.log(`- 今日${tasks[t].title}任务已完成`), tasks[t].success = true)
 			}
+			const unfinishedTask = tasks.filter(task => !task.success).map(task => task.title)
+			let taskMessage = unfinishedTask.join(', ')
+			if (taskMessage === "观看剧集内容") taskMessage = "观看剧集内容等待完成/"
+			vipMessage += `\n` + '大会员额外经验领取' + `${vipExtraExRet ? "成功" : "失败"}\n` + 
+											'大积分三日签到' + `${bigScoreSignRet ? "成功" : "失败"}\n` + 
+											'大积分系列任务' + `${unfinishedTask.length === 0 ? "完成" : taskMessage}`
 			//B币券每月尝试两次领取
-			let day = $.time('dd')
+			const day = $.time('dd')
 			if (day === '1' || day === '15') {
+				const privileges = 
+				[{ code: 1, title: "年度大会员每月B币券" },
+				{ code: 2, title: "年度大会员每月会员购优惠券" },
+				{ code: 3, title: "年度大会员每月漫画福利券成功" },
+				{ code: 4, title: "年度大会员每月会员购包邮券成功" },
+				{ code: 5, title: "年度大会员每月漫画商城优惠券成功" },
+				{ code: 6, title: "大会员每月装扮体验卡成功" },
+				{ code: 7, title: "大会员每月课堂优惠券成功" }]
 				if (config.user.vipType === 2) {
-					await vipPrivilege(1)
+					for (const {code, title} of privileges) await vipPrivilege(code) && (code === 1 ? $.msg(title, "🎉🎉🎉领取成功", `- 领取${title}成功`) : $.log(`- 领取${title}成功`))
 					await $.wait(800) //延迟执行,避免领劵失败
-					let charge_mid = config.Settings?.charge_mid || config.user.mid  //用户设置充电id
-					let bp_num = config.Settings?.bp_num || 5  //用户设置充电数量
-					await Charge(charge_mid, bp_num)//充电
-					for (let i = 2; i <= 7; i++) await vipPrivilege(i)
-				} else if (config.user.vipType === 1) {
-					await vipPrivilege(6)
-					await vipPrivilege(7)
+					await Charge(config.Settings?.charge_mid || config.user.mid, config.Settings?.bp_num || 5)//充电
+				} else {
+					for (const code of [6, 7]) await vipPrivilege(code) && $.log(`- 领取${privileges.find(p => p.code === code).title}成功`)
 				}
 			} 
 		}
@@ -238,9 +249,9 @@ async function signBiliBili() {
 			title: `${$.name} [${config.user.uname}]`,
 			subTitle: `${flag ? "✅任务完成" : "❗️有未完成的任务"}`,
 			content:
-				`任务:登录(观看)${check("watch") ? "" : "+10exp"} 分享${check("share") ? "" : "+5exp"} 投币${check("coins") ? "" : "+50exp"}\n` +
+				`任务:登录(观看)${check("watch") ? "失败" : "+10exp"} 分享${check("share") ? "失败" : "+5exp"} 投币${check("coins") ? "0" : `+${real_times * 10}exp`}\n` +
 				`经验:当前${config.user.level_info.current_exp}/下级${config.user.level_info.next_exp}/满级28800\n` +
-				`等级:当前${config.user.level_info.current_level}级 升满级最快需${Math.max(0, Math.ceil(config.user.v6_exp / 65))}天`,
+				`等级:当前${config.user.level_info.current_level}级 升满级最快需${Math.max(0, Math.ceil(config.user.v6_exp / 65))}天` + vipMessage
 		}
 		$.msg(notice.title, notice.subTitle, notice.content)
 	} else {
@@ -375,16 +386,16 @@ async function watch(aid, bvid, cid) {
 			}
 		})
 	} else {
-		$.log(`- 今日已经观看 ${config.watch.time}`)
+		$.log(`- 今日已观看 记录于${config.watch.time}`)
 	}
 }
 
 async function share(aid, cid, short_link) {
 	$.log("2️⃣ 分享任务")
 	if (check("share")) {
-		$.log("- 正在分享, aid=" + aid)
+		$.log("- 正在分享")
 		const body = {
-			access_key: config.key.replace(/&actionKey=.*?&appkey=.*$/, ''),
+			access_key: config.key,
 			actionKey: 'appkey',
 			appkey: '27eb53fc9058f8c3',
 			build: '72700100',
@@ -403,7 +414,7 @@ async function share(aid, cid, short_link) {
 			share_origin: 'vinfo_share',
 			sid: cid,
 			spm_id: 'main.ugc-video-detail.0.0',
-			statistics: '%7B%22appId%22%3A1%2C%22version%22%3A%227.27.0%22%2C%22abtest%22%3A%22%22%2C%22platform%22%3A1%7D',
+			statistics: '%7B%22appId%22%3A1%2C%22version%22%3A%228.44.0%22%2C%22abtest%22%3A%22%22%2C%22platform%22%3A1%7D',
 			success: 1,
 			ts: $.getTimestamp()
 		}
@@ -424,13 +435,13 @@ async function share(aid, cid, short_link) {
 			}
 		})
 	} else {
-		$.log(`- 今日已经分享 ${config.share.time}`)
+		$.log(`- 今日已分享 记录于${config.share.time}`)
 	}
 }
 
 async function coin() {
 	if (config.coins.num >= 50) {
-		$.log(`- 今日已完成 ${config.coins.time}`)
+		$.log(`- 今日已完成 记录于${config.coins.time}`)
 		return
 	}
 	let like_uid_list = await getFavUid()
@@ -572,17 +583,13 @@ async function silver2coin() {
 			const body = $.toObj(response.body)
 			// 兑换成功
 			if (body && body.code === 0) {
-				let subTitle = `- ${body.message}`
-				let detail = `- 成功兑换: ${body.data.coin} 个硬币\n当前银瓜子: ${body.data.silver} , 当前金瓜子: ${body.data.gold}`
-				$.log(subTitle)
-				$.log(detail)
+				$.log(`- 成功兑换: ${body.data.coin}个硬币`)
+				$.log(`当前银瓜子: ${body.data.silver} , 当前金瓜子: ${body.data.gold}`)
 			}
 			// 兑换中止（重复兑换&银瓜子不足）
 			else if (body && body.code === 403) {
-				let subTitle = "- 未成功兑换"
-				let detail = `- 原因: ${body.message}`
-				$.log(subTitle)
-				$.log(detail)
+				$.log("- 未成功兑换")
+				$.log(`- 原因: ${body.message}`)
 			}
 			// 兑换失败
 			else {
@@ -634,14 +641,16 @@ async function bigScoreSign() {
 			},
 			body: { t: startTime, device: "phone", ts: $.getTimestamp() }
 		}
-		await $.fetch(myRequest).then(response => {
+		return await $.fetch(myRequest).then(response => {
 			try {
 				const body = $.toObj(response.body)
 				if (body?.code === 0 && body?.message === "success") {
 					$.log("- 签到成功")
+					return true
 				} else {
 					$.log("- 签到失败")
 					$.log("- 原因 " + body?.message)
+					return false
 				}
 			} catch (e) {
 				$.logErr(e, response)
@@ -693,14 +702,16 @@ async function vipExtraEx() {
 		},
 		body: $.queryStr(body)
 	}
-	await $.fetch(myRequest).then(response => {
+	return await $.fetch(myRequest).then(response => {
 		try {
 			const body = $.toObj(response.body)
 			if (body?.code === 0 && body?.message === "0") {
 				$.log("- 成功获得10经验值")
+				return true
 			} else {
 				$.log("- 每日额外经验任务失败")
 				$.log("- 原因 " + body?.message)
+				return false
 			}
 		} catch (e) {
 			$.logErr(e, response)
@@ -751,7 +762,6 @@ async function bigScoreStatus() {
 }
 
 async function bigScoreVipMallView() {
-	$.log("#### 执行大会员浏览页面10秒任务")
 	const myRequest = {
 		url: "https://show.bilibili.com/api/activity/fire/common/event/dispatch",
 		headers: {
@@ -760,14 +770,16 @@ async function bigScoreVipMallView() {
 		},
 		body: `{"eventId":"hevent_oy4b7h3epeb"}`
 	}
-	await $.fetch(myRequest).then(response => {
+	return await $.fetch(myRequest).then(response => {
 		try {
 			const body = $.toObj(response.body)
 			if (body?.code === 0 && body?.message === "SUCCESS") {
 				$.log("- 成功获得10点大积分")
+				return true
 			} else {
 				$.log("- 浏览会员购任务失败")
 				$.log("- 原因 " + body?.message)
+				return false
 			}
 		} catch (e) {
 			$.logErr(e, response)
@@ -776,20 +788,21 @@ async function bigScoreVipMallView() {
 }
 
 async function bigScoreAnimateTab() {
-	$.log("#### 执行大会员浏览追番频道页10秒任务")
 	const myRequest = {
 		url: `https://api.bilibili.com/pgc/activity/deliver/task/complete?access_key=${config.key}&appkey=27eb53fc9058f8c3&position=jp_channel&statistics=%7B%22appId%22%3A1%2C%22version%22%3A%228.44.0%22%2C%22abtest%22%3A%22%22%2C%22platform%22%3A1%7D`,
 		method: "POST",
 		headers: {}
 	}
-	await $.fetch(myRequest).then(response => {
+	return await $.fetch(myRequest).then(response => {
 		try {
 			const body = $.toObj(response.body)
 			if (body?.code === 0 && body?.message === "success") {
 				$.log("- 成功获得10点大积分")
+				return true
 			} else {
 				$.log("- 浏览追番频道任务失败")
 				$.log("- 原因 " + body?.message)
+				return false
 			}
 		} catch (e) {
 			$.logErr(e, response)
@@ -798,20 +811,21 @@ async function bigScoreAnimateTab() {
 }
 
 async function bigScoreFilmTab() {
-	$.log("#### 执行大会员浏览影视频道页10秒任务")
 	const myRequest = {
 		url: `https://api.bilibili.com/pgc/activity/deliver/task/complete?access_key=${config.key}&appkey=27eb53fc9058f8c3&position=tv_channel&statistics=%7B%22appId%22%3A1%2C%22version%22%3A%228.44.0%22%2C%22abtest%22%3A%22%22%2C%22platform%22%3A1%7D`,
 		method: "POST",
 		headers: {}
 	}
-	await $.fetch(myRequest).then(response => {
+	return await $.fetch(myRequest).then(response => {
 		try {
 			const body = $.toObj(response.body)
 			if (body?.code === 0 && body?.message === "success") {
 				$.log("- 成功获得10点大积分")
+				return true
 			} else {
 				$.log("- 浏览影视频道任务失败")
 				$.log("- 原因 " + body?.message)
+				return false
 			}
 		} catch (e) {
 			$.logErr(e, response)
@@ -820,7 +834,6 @@ async function bigScoreFilmTab() {
 }
 
 async function bigScoreDressView() {
-	$.log("#### 执行大会员浏览装扮商城主页任务")
 	const body = {
 		csrf: config.cookie.bili_jct,
 		ts: $.getTimestamp(),
@@ -834,13 +847,15 @@ async function bigScoreDressView() {
 		headers: {},
 		body: $.queryStr(body)
 	}
-	await $.fetch(myRequest).then(response => {
+	return await $.fetch(myRequest).then(response => {
 		try {
 			const body = $.toObj(response.body)
 			if (body?.code === 0 && body?.message === "success") {
 				$.log("- 成功获得10点大积分")
+				return true
 			} else {
 				$.log("- 浏览装扮商城主页任务失败")
+				return false
 			}
 		} catch (e) {
 			$.logErr(e, response)
@@ -848,8 +863,7 @@ async function bigScoreDressView() {
 	})
 }
 
-async function bigScoreOgvWatchNewAccept() {
-	$.log("#### 执行接取大会员观看剧集10分钟任务")
+async function bigScoreOgvWatchNew() {
 	const body = {
 		csrf: config.cookie.bili_jct,
 		ts: $.getTimestamp(),
@@ -865,23 +879,86 @@ async function bigScoreOgvWatchNewAccept() {
 		headers: {
 			...baseHeaders,
 			'Content-Type': 'application/x-www-form-urlencoded',
-			'Referer': `https://big.bilibili.com/mobile/bigPoint/task`
+			'Referer': 'https://big.bilibili.com/mobile/bigPoint/task'
 		},
 		body: $.queryStr(body)
+	}
+	return await $.fetch(myRequest).then(async response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body?.code === 0 && body?.message === "success") {
+				if (config.task_id && config.token) {
+					await bigScoreOgvWatchComplete(config.task_id, config.token)
+					delete config.task_id, delete config.token
+					$.setItem($.name + "_daily_bonus", $.toStr(config))
+					return true
+				}
+				delete config.task_id, delete config.token
+				const bangumi = await getBangumi()
+				const episode = bangumi.episodes[Math.floor(Math.random() * bangumi.episodes.length)]
+				if (bangumi) {
+					const { task_id, token } = await bigScoreOgvWatchMaterial(bangumi.season_id, episode.ep_id) || {}
+					//await $.wait(10 * 60 * 1000) //等待十分钟，脚本不可能这么久
+					//直接执行会报错，请求错误
+					Object.assign(config, { task_id, token })
+				} else {
+					$.log("- 获取剧集明细失败")
+				}
+				$.setItem($.name + "_daily_bonus", $.toStr(config))
+			} else {
+				$.log("- 大会员观看剧集任务接取失败")
+				$.log("- 原因 " + body?.message)
+			}
+			return false
+		} catch (e) {
+			$.logErr(e, response)
+		}
+	})
+}
+
+async function bigScoreOgvWatchMaterial(season_id, epid) {
+	const myRequest = {
+		url: `https://api.bilibili.com/pgc/activity/deliver/material/receive?access_key=${config.key}&appkey=27eb53fc9058f8c3&build=84400100&ep_id=${epid}&mobi_app=iphone&season_id=${season_id}`,
+		headers: {
+			...baseHeaders,
+			'Content-Type': 'application/json',
+			'Referer': 'https://big.bilibili.com/mobile/bigPoint/task'
+		},
+		method: "POST"
+	}
+	return await $.fetch(myRequest).then(response => {
+		try {
+			const body = $.toObj(response.body)
+			if (body?.code === 0 && body?.message === "success") {
+				$.log("- 开始计时")
+				//$.log("body: " + $.toStr(body))
+				return body.data.watch_count_down_cfg
+			} else {
+				$.log("- 计时失败")
+				$.log("- 原因 " + body?.message)
+				return 0
+			}
+		} catch (e) {
+			$.logErr(e, response)
+		}
+	})
+}
+
+async function bigScoreOgvWatchComplete(task_id, token) {
+	const timestamp =($.startTime / 1000 + (Math.floor(Math.random() * 900) + 100) / 1000000).toFixed(6)
+	const task_sign = md5(`${timestamp}#df2a46fd53&${token}`).toUpperCase()
+	const myRequest = {
+		url: `https://api.bilibili.com/pgc/activity/deliver/task/complete?access_key=${config.key}&appkey=27eb53fc9058f8c3&task_id=${task_id}&task_sign=${task_sign}&timestamp=${timestamp}&token=${token}`,
+		method: "POST",
+		headers: {}
 	}
 	await $.fetch(myRequest).then(async response => {
 		try {
 			const body = $.toObj(response.body)
 			if (body?.code === 0 && body?.message === "success") {
-				$.log("- 大会员观看剧集任务接取成功, 需自行观看")
-				/* $.log("- 大会员观看剧集任务接取成功, 执行心跳上报...")
-				const bangumiStatus = await getBangumi()
-				let episode = bangumiStatus.episodes[Math.floor(Math.random() * bangumiStatus.episodes.length)]
-				$.log("episode: " + $.toStr(episode))
-				$.log("- 本次播放的正片为: " + episode.share_copy)
-				bangumiStatus === 0 ? $.log("- 获取剧集明细失败") : await watchBangumi(episode) */
+				$.log("- 大会员观看剧集任务完成")
 			} else {
-				$.log("- 大会员观看剧集任务接取失败")
+				$.log("- 大会员观看剧集任务失败")
 				$.log("- 原因 " + body?.message)
 			}
 		} catch (e) {
@@ -898,7 +975,6 @@ async function getBangumi() {
 		try {
 			const body = $.toObj(response.body)
 			if (body?.code === 0 && body?.message === "success") {
-				$.log("- 获取剧集明细成功")
 				return body.result
 			} else {
 				return 0
@@ -909,47 +985,7 @@ async function getBangumi() {
 	})
 }
 
-async function watchBangumi(episode) {
-	const playedTime = ~~(Math.random() * 895) + 905
-	const body = {
-		aid: episode.aid,
-		cid: episode.cid,
-		bvid: episode.bvid,
-		mid: config.user.mid,
-		sid: '33378',
-		epid: episode.ep_id,
-		csrf: config.cookie.bili_jct,
-		type: 4,
-		sub_type: 1,
-		start_ts: $.getTimestamp() - playedTime,
-		played_time : playedTime,
-		real_played_time: playedTime,
-		realtime: playedTime
-	}
-	const myRequest = {
-		url: `https://api.bilibili.com/x/click-interface/web/heartbeat?aid=${episode.aid}&played_time=${playedTime}`,
-		headers: {
-			"cookie": config.cookieStr,
-			"referrer": `https://www.bilibili.com/video/${episode.bvid}`
-		},
-		body: $.queryStr(body)
-	}
-	return await $.fetch(myRequest).then(response => {
-		try {
-			const body = $.toObj(response.body)
-			if (body?.code === 0 && body?.message === "0") {
-				$.log("- 心跳上报成功")
-			} else {
-				$.log("- 心跳上报失败")
-			}
-		} catch (e) {
-			$.logErr(e, response)
-		}
-	})
-}
-
 async function vipPrivilege(type) {
-	$.log("#### 领取大会员月度福利")
 	const body = {
 		csrf: config.cookie.bili_jct,
 		type
@@ -961,42 +997,18 @@ async function vipPrivilege(type) {
 		},
 		body: $.queryStr(body)
 	}
-	await $.fetch(myRequest).then(response => {
+	return await $.fetch(myRequest).then(response => {
 		try {
 			const body = $.toObj(response.body)
 			if (body?.code === 0) {
-				switch (type) {
-					case 1:
-						$.log("- 领取年度大会员每月B币券成功")
-						$.msg("年度大会员月度福利", "B币券", "🎉🎉🎉领取成功")
-						break
-					case 2:
-						$.log("- 领取年度大会员每月会员购优惠券成功")
-						break
-					case 3:
-						$.log("- 领取年度大会员每月漫画福利券成功")
-						break
-					case 4:
-						$.log("- 领取年度大会员每月会员购包邮券成功")
-						break
-					case 5:
-						$.log("- 领取年度大会员每月漫画商城优惠券成功")
-						break
-					case 6:
-						$.log("- 领取大会员每月装扮体验卡成功")
-						break
-					case 7:
-						$.log("- 领取大会员每月课堂优惠券成功")
-						break
-					default:
-						break
-				}
+				return true
 			} else {
-				$.log("- 领取大会员每月福利失败, 福利编码为" + type)
+				$.log("- 领取大会员每月福利失败")
 				$.log("- 原因 " + body?.message)
 				if (type === 1) {
 					$.msg("年度大会员月度福利", "B币券领取失败", "原因为: " + body?.message)
 				}
+				return false
 				//其他福利没什么用,失败也无需单独通知
 			}
 		} catch (e) {
@@ -1126,9 +1138,7 @@ async function queryStatus() {
 				if (body.data.login) {
 					$.log("- 今日已登录")
 					config.user.num = config.user?.num || 1
-					if (!config['user'].hasOwnProperty("time")) {
-						config.user.time = startTime
-					}
+					if (!config['user'].hasOwnProperty("time")) config.user.time = startTime
 				} else {
 					$.log("! 今日尚未登录")
 					config.user.num = 0
@@ -1136,9 +1146,7 @@ async function queryStatus() {
 				if (body.data.watch){
 					$.log("- 今日已观看")
 					config.watch.num = config.watch?.num || 1
-					if (!config['watch'].hasOwnProperty("time")) {
-						config.watch.time = startTime
-					}
+					if (!config['watch'].hasOwnProperty("time")) config.watch.time = startTime
 				} else {
 					$.log("! 今日尚未观看")
 					config.watch.num = 0
@@ -1146,20 +1154,16 @@ async function queryStatus() {
 				if (body.data.share){
 					$.log("- 今日已分享")
 					config.share.num = config.share?.num || 1
-					if (!config['share'].hasOwnProperty("time")) {
-						config.share.time = startTime
-					}
+					if (!config['share'].hasOwnProperty("time")) config.share.time = startTime
 				} else {
 					$.log("! 今日尚未分享")
 					config.share.num = 0
 				}
 				if (body.data.coins === 50){
 					$.log("- 今日已投币")
-					if (!config['coins'].hasOwnProperty("time")) {
-						config.coins.time = startTime
-					} 
+					if (!config['coins'].hasOwnProperty("time")) config.coins.time = startTime
 				} else if ((body.data.coins / 10) >= Number(config.Settings?.exec ?? 5)) {
-					config.coins.time = startTime
+					if (!config['coins'].hasOwnProperty("time")) config.coins.time = startTime
 					$.log("- 今日已投币（达到用户设定数量）")
 				} else if (config.user.money <= 5) {
 					$.log("! 硬币数不足")
@@ -1179,7 +1183,6 @@ async function queryStatus() {
 }
 
 async function dynamic() {
-	$.log("#### 获取首页视频")
 	const myRequest = {
 		url: `https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=${config.cookie.DedeUserID}&type_list=8&from=&platform=web`,
 		headers: {
@@ -1193,9 +1196,6 @@ async function dynamic() {
 				cards = body.data.cards
 				const { user, watch, share } = config
 				user.time = watch.time = share.time = startTime
-				$.log("- 获取视频动态成功")
-			} else {
-				$.log("- 获取视频动态失败")
 			}
 		} catch (e) {
 			$.logErr(e, response)
