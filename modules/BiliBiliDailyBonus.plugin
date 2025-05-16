@@ -24,7 +24,7 @@ cron "30 7 * * *" script-path=https://raw.githubusercontent.com/ClydeTime/BiliBi
 
 cron "41 7 * * *" script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站观看剧集大积分, enable={bigPoint}, timeout=15
 
-http-reponse ^https?:\/\/app\.bilibili\.com\/x\/resource\/fingerprint\? script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站Cookie(扫码), timeout=30, enable={扫码Cookie}
+http-response ^https?:\/\/app\.bilibili\.com\/x\/resource\/fingerprint\? script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站Cookie(扫码), timeout=30, enable={扫码Cookie}
 
 http-request ^https?:\/\/app\.bilibili\.com\/x\/resource\/fingerprint\? script-path=https://raw.githubusercontent.com/ClydeTime/BiliBili/main/js/BiliBiliDailyBonus.js, tag=B站Cookie(APP), enable={APPCookie}
 
