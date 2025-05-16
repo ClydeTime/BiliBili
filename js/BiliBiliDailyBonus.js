@@ -1,7 +1,7 @@
 /*
 哔哩哔哩每日任务(V1.5)
 
-更新时间: 2025-05-15
+更新时间: 2025-05-16
 脚本兼容: QuantumultX, Surge, Loon
 脚本作者: MartinsKing（@ClydeTime）
 软件功能: 登录/观看/分享/投币/直播签到/银瓜子转硬币/大会员积分签到/年度大会员每月B币券+等任务
@@ -213,7 +213,7 @@ async function signBiliBili() {
 			}
 			const unfinishedTask = tasks.filter(task => !task.success).map(task => task.title)
 			let taskMessage = unfinishedTask.join(', ')
-			if (taskMessage === "观看剧集内容") taskMessage = "观看剧集内容等待完成/"
+			taskMessage += taskMessage === "观看剧集内容" ? (config.task_id && config.token ? "等待完成" : "执行失败") : "执行失败"
 			vipMessage += `\n` + '大会员额外经验领取' + `${vipExtraExRet ? "成功" : "失败"}\n` + 
 											'大积分三日签到' + `${bigScoreSignRet ? "成功" : "失败"}\n` + 
 											'大积分系列任务' + `${unfinishedTask.length === 0 ? "完成" : taskMessage}`
@@ -898,8 +898,6 @@ async function bigScoreOgvWatchNew() {
 				const episode = bangumi.episodes[Math.floor(Math.random() * bangumi.episodes.length)]
 				if (bangumi) {
 					const { task_id, token } = await bigScoreOgvWatchMaterial(bangumi.season_id, episode.ep_id) || {}
-					//await $.wait(10 * 60 * 1000) //等待十分钟，脚本不可能这么久
-					//直接执行会报错，请求错误
 					Object.assign(config, { task_id, token })
 				} else {
 					$.log("- 获取剧集明细失败")
@@ -930,11 +928,10 @@ async function bigScoreOgvWatchMaterial(season_id, epid) {
 		try {
 			const body = $.toObj(response.body)
 			if (body?.code === 0 && body?.message === "success") {
-				$.log("- 开始计时")
-				//$.log("body: " + $.toStr(body))
+				$.log("- 任务计时开始,等待十分钟...")
 				return body.data.watch_count_down_cfg
 			} else {
-				$.log("- 计时失败")
+				$.log("- 任务计时失败")
 				$.log("- 原因 " + body?.message)
 				return 0
 			}
