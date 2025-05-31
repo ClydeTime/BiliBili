@@ -277,6 +277,9 @@ async function getQrcode() {
 	body.sign = generateSign(body)
 	const myRequest = {
 		url: "https://passport.bilibili.com/x/passport-tv-login/qrcode/auth_code",
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+		},
 		body: $.queryStr(body)
 	}
 	return await $.fetch(myRequest).then(response => {
