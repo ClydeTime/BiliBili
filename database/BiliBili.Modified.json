@@ -382,6 +382,30 @@
 					}
 				},
 				{
+					"id": 59580,
+					"name": "创作之翼个性主题",
+					"preview": "https://i0.hdslb.com/bfs/garb/item/320186e70545079eb0f2bce7bea02dca9da4d7f2.png",
+					"ver": 1695098318,
+					"package_url": "https://i0.hdslb.com/bfs/garb/zip/23362a35bfdcc5f3e556689045c632c8bb126bb3.zip",
+					"package_md5": "155279760465acbe213d21b6e4382ad3",
+					"data":
+					{
+						"color_mode": "dark",
+						"color": "#ffffff",
+						"color_second_page": "#1a7bbf",
+						"side_bg_color": "",
+						"tail_color": "#90ffee",
+						"tail_color_selected": "#ebffe3",
+						"tail_icon_ani": true,
+						"tail_icon_ani_mode": "once",
+						"head_myself_mp4_play": "loop",
+						"pub_btn_shade_color_top": "",
+						"pub_btn_shade_color_bottom": "",
+						"pub_btn_plus_color": "#6dfff9",
+						"tail_icon_mode": "img"
+					}
+				},
+				{
 					"id": 1679479030001,
 					"name": "奶蓝梦境",
 					"preview": "https://i0.hdslb.com/bfs/garb/c8d384c60d5b32a0373f1c7544143faa79a1bcf7.jpg",
