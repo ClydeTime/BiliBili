@@ -471,7 +471,7 @@ async function coin() {
 			await $.fetch(myRequest).then(async response => {
 				try {
 					const body = $.toObj(response.body)
-					if (body?.code === 0 && body?.message === "0") {
+					if (body?.code === 0 && (body?.message === "0" || body?.message === "OK")) {
 						$.log("- 投币成功")
 						config.user.money -= 1
 						config.coins.num += 10
