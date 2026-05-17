@@ -318,7 +318,7 @@ async function loginConfirm(auth_code) {
 	return await $.fetch(myRequest).then(response => {
 		try {
 			const body = $.toObj(response.body)
-			if (body.code === 0 && body.message === "0") {
+			if (body.code === 0 && body.message === "OK") {
 				$.log("- 确认登录成功")
 				const cookieStr = body.data.cookie_info.cookies.map(c => `${c.name}=${c.value}`).join('; ');
 				[config.cookieStr, config.cookie, config.key] = [cookieStr, string2object(cookieStr), body.data.access_token];
