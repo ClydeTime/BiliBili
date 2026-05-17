@@ -285,7 +285,7 @@ async function getQrcode() {
 	return await $.fetch(myRequest).then(response => {
 		try {
 			const body = $.toObj(response.body)
-			if (body.code === 0 && body.message === "0") {
+			if (body.code === 0 && body.message === "OK") {
 				let media_url = `https://tool.lu/qrcode/basic.html?text=https://passport.bilibili.com/x/passport-tv-login/h5/qrcode/auth?auth_code=${body.data.auth_code}&mobi_app=iphone`
 				$.msg($.name + "扫码", "使用客户端扫描二维码", "请20s内完成扫码,长按推送放大二维码或点击推送跳转网页获取二维码", { 'open-url': media_url, 'media-url': media_url })
 				$.log("二维码已生成，如在通知中获取图片失败，请20s内使用浏览器打开以下地址\n" + `${media_url}`)
